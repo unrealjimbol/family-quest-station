@@ -147,44 +147,39 @@ export default function QuestBoard({
   return (
     <div>
       <Confetti active={showConfetti} seed={kidId === "elio" ? 1 : 7} />
-      <header className="mb-6 flex items-center justify-between gap-4 md:mb-10">
-        <div className="flex items-center gap-4">
+      <header className="mb-5 flex items-center justify-between gap-2 md:mb-10 md:gap-4">
+        <div className="flex min-w-0 items-center gap-2 md:gap-4">
           <Link
             href="/"
-            className="flex h-12 min-w-12 items-center justify-center rounded-full bg-white px-4 text-base font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-lg font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:h-12 md:w-auto md:px-4 md:text-base"
             aria-label="Back to home"
           >
             <span aria-hidden="true">←</span>
             <span className="ml-2 hidden md:inline">Home</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-4xl md:text-5xl" aria-hidden="true">
+          <div className="flex min-w-0 items-center gap-2 md:gap-3">
+            <div className="text-3xl md:text-5xl" aria-hidden="true">
               {kidEmoji}
             </div>
-            <div>
-              <h1 className="text-2xl font-bold leading-tight md:text-3xl">Hi, {kidName}!</h1>
-              <p className="text-sm text-ink-soft md:text-base">Today&apos;s quests</p>
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-bold leading-tight md:text-3xl">
+                Hi, {kidName}!
+              </h1>
+              <p className="hidden text-sm text-ink-soft md:block md:text-base">
+                Today&apos;s quests
+              </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 md:gap-3">
-          <Link
-            href={`/badges/${kidId}`}
-            className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:text-base"
-            aria-label={`${badgeCount} badges`}
-          >
-            <span aria-hidden="true">🏆</span>
-            <span>{badgeCount}</span>
-            <span className="hidden md:inline">badges</span>
-          </Link>
-          <button
-            type="button"
-            onClick={handleResetToday}
-            className="hidden rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink-soft shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:inline-flex"
-          >
-            Reset today
-          </button>
-        </div>
+        <Link
+          href={`/badges/${kidId}`}
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:h-12 md:gap-2 md:px-4 md:text-base"
+          aria-label={`${badgeCount} badges`}
+        >
+          <span aria-hidden="true">🏆</span>
+          <span>{badgeCount}</span>
+          <span className="hidden md:inline">badges</span>
+        </Link>
       </header>
 
       {vibe ? (
@@ -353,11 +348,11 @@ export default function QuestBoard({
         })}
       </div>
 
-      <div className="mt-10 flex justify-center md:hidden">
+      <div className="mt-10 flex justify-center">
         <button
           type="button"
           onClick={handleResetToday}
-          className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink-soft shadow-sm ring-1 ring-black/5"
+          className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink-soft shadow-sm ring-1 ring-black/5 hover:bg-bg-soft"
         >
           Reset today
         </button>

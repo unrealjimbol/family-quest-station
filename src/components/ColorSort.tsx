@@ -422,7 +422,7 @@ function Tube({ colors, selected, shake, pulse, onClick }: TubeProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`relative h-56 w-16 rounded-b-3xl rounded-t-md border-[3px] border-ink/20 bg-white/40 shadow-sm transition-all duration-200 md:h-64 md:w-20 ${
+      className={`relative h-44 w-12 rounded-b-3xl rounded-t-md border-[3px] border-ink/20 bg-white/40 shadow-sm transition-all duration-200 sm:h-52 sm:w-14 md:h-64 md:w-20 ${
         selected ? "-translate-y-4" : ""
       } ${shake ? "card-shake" : ""} ${pulse ? "ring-4 ring-yellow-300/70" : ""}`}
       aria-label={`Tube with ${colors.length} layers`}

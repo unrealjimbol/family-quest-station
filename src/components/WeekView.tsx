@@ -158,35 +158,40 @@ function DayRow({ cell, byGroup, accentColor }: DayRowProps) {
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-3 rounded-2xl px-3 py-3 md:flex-nowrap md:gap-4 md:px-4 ${
+      className={`flex items-center gap-2 rounded-2xl px-2.5 py-2.5 md:gap-4 md:px-4 md:py-3 ${
         cell.isToday ? "bg-bg-soft ring-1 ring-black/10" : ""
       }`}
       style={cell.isToday ? { boxShadow: `inset 0 0 0 1px ${accentColor}40` } : undefined}
     >
-      <div className="w-20 shrink-0">
-        <div className="text-sm font-bold md:text-base">
+      <div className="w-12 shrink-0 md:w-20">
+        <div className="text-xs font-bold md:text-base">
           {dayLabel(cell.date, cell.isToday)}
         </div>
-        <div className="text-xs text-ink-soft">{quickDate(cell.date)}</div>
+        <div className="text-[10px] text-ink-soft md:text-xs">
+          {quickDate(cell.date)}
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-wrap items-center gap-3 md:flex-nowrap md:gap-5">
+      <div className="flex flex-1 items-center justify-start gap-2 md:gap-5">
         {blockOrderChronological.map((g) => {
           const quests = byGroup[g];
           if (quests.length === 0) return null;
           return (
-            <div key={g} className="flex items-center gap-1.5">
-              <span className="text-base md:text-lg" aria-hidden="true">
+            <div key={g} className="flex items-center gap-0.5 md:gap-1.5">
+              <span
+                className="hidden text-base md:inline md:text-lg"
+                aria-hidden="true"
+              >
                 {groupEmoji[g]}
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5 md:gap-1">
                 {quests.map((q) => {
                   const done = doneSet.has(q.id);
                   return (
                     <span
                       key={q.id}
                       aria-label={done ? `${q.label} done` : `${q.label} not done`}
-                      className="block h-3 w-3 rounded-full md:h-3.5 md:w-3.5"
+                      className="block h-2 w-2 rounded-full md:h-3.5 md:w-3.5"
                       style={{
                         backgroundColor: done ? groupColor[g] : "transparent",
                         boxShadow: done ? "none" : "inset 0 0 0 1.5px rgba(58,46,34,0.18)",
@@ -200,16 +205,20 @@ function DayRow({ cell, byGroup, accentColor }: DayRowProps) {
         })}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 md:gap-3">
+      <div className="flex shrink-0 items-center gap-1 md:gap-3">
         {cell.vibe ? (
-          <span title={cell.vibe.label} className="text-xl md:text-2xl" aria-hidden="true">
+          <span
+            title={cell.vibe.label}
+            className="text-base md:text-2xl"
+            aria-hidden="true"
+          >
             {cell.vibe.emoji}
           </span>
         ) : null}
         {earnedScience ? (
           <span
             title={earnedScience.badge.name}
-            className="text-xl md:text-2xl"
+            className="text-base md:text-2xl"
             aria-hidden="true"
           >
             {earnedScience.badge.emoji}
