@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import QuestBoard from "@/components/QuestBoard";
 import QuestTransition from "@/components/QuestTransition";
+import SleepCeremony from "@/components/SleepCeremony";
 import VibeCheck from "@/components/VibeCheck";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
@@ -30,10 +31,27 @@ export default function KidView({
   const state = useAppState();
   const todayVibe = state[kidId].today.vibe;
   const hasVibe = Boolean(todayVibe);
+  const completed = state[kidId].today.completedQuestIds;
 
   // If kid already vibed today, go straight to board.
   // Otherwise start at vibe-check.
   const [phase, setPhase] = useState<Phase>(hasVibe ? "board" : "vibe");
+  const [showSleepCeremony, setShowSleepCeremony] = useState(false);
+  const [sleepCeremonyDismissed, setSleepCeremonyDismissed] = useState(false);
+
+  // Detect when all night quests are done
+  const nightQuests = useMemo(() => quests.filter((q) => q.group === "night"), [quests]);
+  const allNightDone = nightQuests.length > 0 && nightQuests.every((q) => completed.includes(q.id));
+  const prevAllNightDone = useRef(allNightDone);
+
+  // Auto-trigger sleep ceremony when all night quests complete
+  // (only once per session, not if user dismissed it)
+  useEffect(() => {
+    if (allNightDone && !prevAllNightDone.current && !sleepCeremonyDismissed && phase === "board") {
+      setShowSleepCeremony(true);
+    }
+    prevAllNightDone.current = allNightDone;
+  }, [allNightDone, sleepCeremonyDismissed, phase]);
 
   function handleVibeContinue() {
     setPhase("transitioning");
@@ -87,6 +105,17 @@ export default function KidView({
           vibeKey={todayVibe?.key}
           accentColor={progressColor}
           onDone={handleTransitionDone}
+        />
+      ) : null}
+      {showSleepCeremony ? (
+        <SleepCeremony
+          kidId={kidId}
+          kidName={kidName}
+          kidEmoji={kidEmoji}
+          onClose={() => {
+            setShowSleepCeremony(false);
+            setSleepCeremonyDismissed(true);
+          }}
         />
       ) : null}
     </>
