@@ -17,6 +17,13 @@ import { useNowTick } from "@/lib/useClock";
 
 const UNLOCK_THRESHOLD = 5;
 
+const BLOCK_CHEERS: Record<QuestGroup, { emoji: string; message: string }> = {
+  morning: { emoji: "🚀", message: "Morning hero! Ready to go!" },
+  afterschool: { emoji: "🎮", message: "Crushed it! Free time earned!" },
+  dinner: { emoji: "🏆", message: "Table champion!" },
+  night: { emoji: "🌙", message: "Night owl complete!" },
+};
+
 type Props = {
   kidId: KidId;
   kidName: string;
@@ -57,6 +64,8 @@ export default function QuestBoard({
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [manualToggles, setManualToggles] = useState<Partial<Record<QuestGroup, boolean>>>({});
+  const [celebratingBlock, setCelebratingBlock] = useState<QuestGroup | null>(null);
+  const celebratedBlocks = useRef<Set<QuestGroup>>(new Set());
   const wasUnlocked = useRef(scienceUnlocked);
 
   const completedSet = useMemo(() => new Set(completed), [completed]);
@@ -125,6 +134,18 @@ export default function QuestBoard({
         wasUnlocked.current = true;
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3500);
+      }
+      // Check if this quest's block is now fully complete
+      const quest = quests.find((q) => q.id === questId);
+      if (quest) {
+        const blockQuests = grouped[quest.group];
+        const newCompleted = [...completed, questId];
+        const blockDone = blockQuests.every((q) => newCompleted.includes(q.id));
+        if (blockDone && !celebratedBlocks.current.has(quest.group) && quest.group !== "night") {
+          celebratedBlocks.current.add(quest.group);
+          setCelebratingBlock(quest.group);
+          setTimeout(() => setCelebratingBlock(null), 2800);
+        }
       }
     }
   }
@@ -343,6 +364,9 @@ export default function QuestBoard({
                   );
                 })}
               </ul>
+              {celebratingBlock === groupKey ? (
+                <BlockCheer group={groupKey} />
+              ) : null}
             </BlockSection>
           );
         })}
@@ -511,6 +535,39 @@ function FutureBlock({
         <div className="text-xs text-ink-soft md:text-sm">
           Comes back at {blockStartLabel(groupKey)}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function BlockCheer({ group }: { group: QuestGroup }) {
+  const cheer = BLOCK_CHEERS[group];
+  return (
+    <div className="mt-4 animate-pop overflow-hidden rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-5 py-4 ring-1 ring-amber-200/60 md:px-6">
+      <div className="flex items-center justify-center gap-3">
+        <span className="text-2xl md:text-3xl" aria-hidden="true">
+          {cheer.emoji}
+        </span>
+        <span className="text-base font-bold text-amber-900 md:text-lg">
+          {cheer.message}
+        </span>
+        <span className="text-2xl md:text-3xl" aria-hidden="true">
+          {cheer.emoji}
+        </span>
+      </div>
+      {/* Mini sparkles */}
+      <div className="mt-2 flex justify-center gap-1">
+        {["✨", "⭐", "✨", "⭐", "✨"].map((s, i) => (
+          <span
+            key={i}
+            className="text-sm opacity-70"
+            style={{
+              animation: `pop 400ms ease-out ${i * 80}ms both`,
+            }}
+          >
+            {s}
+          </span>
+        ))}
       </div>
     </div>
   );
