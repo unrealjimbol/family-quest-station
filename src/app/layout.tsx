@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Nunito } from "next/font/google";
+import RegisterSW from "@/components/RegisterSW";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -19,6 +20,16 @@ const body = Nunito({
 export const metadata: Metadata = {
   title: "Family Quest Station",
   description: "Cozy daily quests, little experiments, and quiet check-ins for the whole family.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FQ Station",
+  },
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -39,7 +50,10 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-bg text-ink font-body">{children}</body>
+      <body className="min-h-full bg-bg text-ink font-body">
+        {children}
+        <RegisterSW />
+      </body>
     </html>
   );
 }
