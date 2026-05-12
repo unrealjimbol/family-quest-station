@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import QuestEditor from "@/components/QuestEditor";
 import KidWeekView from "@/components/WeekView";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
@@ -108,6 +109,23 @@ export default function ParentPage() {
             accentColor="#d68fa5"
           />
         </div>
+
+        {/* Task Editor */}
+        <section className="mt-10">
+          <div className="text-center mb-5">
+            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">Customize</p>
+            <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">
+              Edit quests
+            </h2>
+            <p className="mt-2 text-sm text-ink-soft md:text-base">
+              Add, remove, or rearrange daily quests for each kid.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <QuestEditor kidId="elio" kidName="Elio" kidEmoji="🦊" />
+            <QuestEditor kidId="emilia" kidName="Emilia" kidEmoji="🦄" />
+          </div>
+        </section>
 
         <section className="mt-12 text-center">
           <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">Parent Reset</p>

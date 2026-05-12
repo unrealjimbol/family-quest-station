@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { playSoftTone } from "@/lib/sounds";
 import { useAppState } from "@/lib/store";
 import type { KidId } from "@/lib/types";
 
@@ -46,6 +47,10 @@ export default function SleepCeremony({ kidId, kidName, kidEmoji, onClose }: Pro
 
   useEffect(() => {
     if (phase === "intro" || phase === "done") return;
+
+    // Soft tone at start of each breath phase
+    if (phase === "inhale") playSoftTone(262); // C4
+    if (phase === "exhale") playSoftTone(196); // G3
 
     let timer: ReturnType<typeof setTimeout>;
 

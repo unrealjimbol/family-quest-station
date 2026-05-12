@@ -5,6 +5,7 @@ import QuestBoard from "@/components/QuestBoard";
 import QuestTransition from "@/components/QuestTransition";
 import SleepCeremony from "@/components/SleepCeremony";
 import VibeCheck from "@/components/VibeCheck";
+import { getQuests } from "@/lib/customQuests";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
 import type { KidId, Quest } from "@/lib/types";
@@ -33,6 +34,9 @@ export default function KidView({
   const hasVibe = Boolean(todayVibe);
   const completed = state[kidId].today.completedQuestIds;
 
+  // Use custom quests if parent has configured them, else fall back to defaults
+  const activeQuests = useMemo(() => getQuests(kidId), [kidId]);
+
   // If kid already vibed today, go straight to board.
   // Otherwise start at vibe-check.
   const [phase, setPhase] = useState<Phase>(hasVibe ? "board" : "vibe");
@@ -40,7 +44,7 @@ export default function KidView({
   const [sleepCeremonyDismissed, setSleepCeremonyDismissed] = useState(false);
 
   // Detect when all night quests are done
-  const nightQuests = useMemo(() => quests.filter((q) => q.group === "night"), [quests]);
+  const nightQuests = useMemo(() => activeQuests.filter((q) => q.group === "night"), [activeQuests]);
   const allNightDone = nightQuests.length > 0 && nightQuests.every((q) => completed.includes(q.id));
   const prevAllNightDone = useRef(allNightDone);
 
@@ -93,7 +97,7 @@ export default function KidView({
         kidId={kidId}
         kidName={kidName}
         kidEmoji={kidEmoji}
-        quests={quests}
+        quests={activeQuests}
         accent={accent}
         progressColor={progressColor}
         onRedoVibe={redoVibe}

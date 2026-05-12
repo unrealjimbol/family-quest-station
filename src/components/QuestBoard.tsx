@@ -13,6 +13,8 @@ import {
   getBlockState,
   type BlockState,
 } from "@/lib/timeBlocks";
+import { playTick, playUntick, playChime, playFanfare } from "@/lib/sounds";
+import { calcStreak } from "@/lib/streak";
 import { useNowTick } from "@/lib/useClock";
 
 const UNLOCK_THRESHOLD = 5;
@@ -60,6 +62,10 @@ export default function QuestBoard({
   const scienceUnlocked = todayState.scienceUnlocked;
   const vibe = todayState.vibe;
   const badgeCount = state[kidId].badges.length;
+  const streak = useMemo(
+    () => calcStreak(state[kidId].history, todayState),
+    [state[kidId].history, todayState],
+  );
 
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -127,6 +133,7 @@ export default function QuestBoard({
       };
     });
     if (!isDone) {
+      playTick();
       setJustCompleted(questId);
       setTimeout(() => setJustCompleted((cur) => (cur === questId ? null : cur)), 600);
       const willUnlock = !wasUnlocked.current && completed.length + 1 >= UNLOCK_THRESHOLD;
@@ -134,6 +141,7 @@ export default function QuestBoard({
         wasUnlocked.current = true;
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3500);
+        playFanfare();
       }
       // Check if this quest's block is now fully complete
       const quest = quests.find((q) => q.id === questId);
@@ -145,8 +153,11 @@ export default function QuestBoard({
           celebratedBlocks.current.add(quest.group);
           setCelebratingBlock(quest.group);
           setTimeout(() => setCelebratingBlock(null), 2800);
+          playChime();
         }
       }
+    } else {
+      playUntick();
     }
   }
 
@@ -192,15 +203,26 @@ export default function QuestBoard({
             </div>
           </div>
         </div>
-        <Link
-          href={`/badges/${kidId}`}
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:h-12 md:gap-2 md:px-4 md:text-base"
-          aria-label={`${badgeCount} badges`}
-        >
-          <span aria-hidden="true">🏆</span>
-          <span>{badgeCount}</span>
-          <span className="hidden md:inline">badges</span>
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          {streak >= 2 ? (
+            <div
+              className="flex h-11 items-center gap-1 rounded-full bg-gradient-to-r from-orange-50 to-amber-50 px-3 text-sm font-bold text-orange-600 shadow-sm ring-1 ring-orange-200/60 md:h-12 md:gap-1.5 md:px-4 md:text-base"
+              aria-label={`${streak} day streak`}
+            >
+              <span aria-hidden="true">🔥</span>
+              <span>{streak}</span>
+            </div>
+          ) : null}
+          <Link
+            href={`/badges/${kidId}`}
+            className="flex h-11 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold text-ink shadow-sm ring-1 ring-black/5 transition hover:bg-bg-soft md:h-12 md:gap-2 md:px-4 md:text-base"
+            aria-label={`${badgeCount} badges`}
+          >
+            <span aria-hidden="true">🏆</span>
+            <span>{badgeCount}</span>
+            <span className="hidden md:inline">badges</span>
+          </Link>
+        </div>
       </header>
 
       {vibe ? (
