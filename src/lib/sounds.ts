@@ -98,6 +98,26 @@ export function playFanfare() {
   });
 }
 
+/** Short "coin" ding for earning a point */
+export function playCoin() {
+  const c = getCtx();
+  if (!c) return;
+  const notes = [1047, 1319]; // C6 E6 — quick two-note ding
+  notes.forEach((freq, i) => {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = "triangle";
+    o.connect(g);
+    g.connect(c.destination);
+    const t = c.currentTime + i * 0.08;
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.13, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o.start(t);
+    o.stop(t + 0.18);
+  });
+}
+
 /** Soft low tone for sleep ceremony breathing */
 export function playSoftTone(freq = 220) {
   const c = getCtx();

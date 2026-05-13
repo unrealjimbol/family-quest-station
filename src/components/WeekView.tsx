@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { elioQuests, emiliaQuests } from "@/data/quests";
 import { scienceQuests } from "@/data/scienceQuests";
+import { getWeekTotals } from "@/lib/points";
 import { todayStr } from "@/lib/storage";
 import { useAppState } from "@/lib/store";
 import { blockOrderChronological } from "@/lib/timeBlocks";
@@ -113,6 +114,13 @@ export default function KidWeekView({ kidId, kidName, kidEmoji, accentColor }: P
     [today, kid.history, kid.today],
   );
 
+  const pointsTotals = useMemo(() => {
+    const totals = getWeekTotals(kidId);
+    const map = new Map<string, number>();
+    for (const t of totals) map.set(t.date, t.total);
+    return map;
+  }, [kidId]);
+
   return (
     <section
       className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5 md:p-7"
@@ -137,6 +145,7 @@ export default function KidWeekView({ kidId, kidName, kidEmoji, accentColor }: P
             cell={cell}
             byGroup={byGroup}
             accentColor={accentColor}
+            pointsTotal={pointsTotals.get(cell.date) ?? 0}
           />
         ))}
       </div>
@@ -148,9 +157,10 @@ type DayRowProps = {
   cell: DayCell;
   byGroup: Record<QuestGroup, Quest[]>;
   accentColor: string;
+  pointsTotal: number;
 };
 
-function DayRow({ cell, byGroup, accentColor }: DayRowProps) {
+function DayRow({ cell, byGroup, accentColor, pointsTotal }: DayRowProps) {
   const doneSet = useMemo(() => new Set(cell.doneIds), [cell.doneIds]);
   const earnedScience = cell.scienceQuestEarned
     ? scienceQuests.find((s) => s.id === cell.scienceQuestEarned)
@@ -206,6 +216,14 @@ function DayRow({ cell, byGroup, accentColor }: DayRowProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1 md:gap-3">
+        {pointsTotal > 0 ? (
+          <span
+            className="flex items-center gap-0.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-xs font-bold text-amber-600 ring-1 ring-amber-200/50 md:px-2 md:text-sm"
+            title={`${pointsTotal} points`}
+          >
+            ⭐{pointsTotal}
+          </span>
+        ) : null}
         {cell.vibe ? (
           <span
             title={cell.vibe.label}

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import PointsTracker from "@/components/PointsTracker";
 import QuestBoard from "@/components/QuestBoard";
 import QuestTransition from "@/components/QuestTransition";
 import SleepCeremony from "@/components/SleepCeremony";
 import VibeCheck from "@/components/VibeCheck";
 import { getQuests } from "@/lib/customQuests";
+import { getTodayTotal } from "@/lib/points";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
 import type { KidId, Quest } from "@/lib/types";
@@ -42,6 +44,7 @@ export default function KidView({
   const [phase, setPhase] = useState<Phase>(hasVibe ? "board" : "vibe");
   const [showSleepCeremony, setShowSleepCeremony] = useState(false);
   const [sleepCeremonyDismissed, setSleepCeremonyDismissed] = useState(false);
+  const [showPoints, setShowPoints] = useState(false);
 
   // Detect when all night quests are done
   const nightQuests = useMemo(() => activeQuests.filter((q) => q.group === "night"), [activeQuests]);
@@ -102,6 +105,35 @@ export default function KidView({
         progressColor={progressColor}
         onRedoVibe={redoVibe}
       />
+
+      {/* Floating points button */}
+      {phase === "board" ? (
+        <button
+          type="button"
+          onClick={() => setShowPoints(true)}
+          className="fixed bottom-6 right-6 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 shadow-lg ring-1 ring-black/10 transition active:scale-95 md:bottom-8 md:right-8 md:h-16 md:px-6"
+          style={{ boxShadow: `0 4px 20px ${progressColor}30` }}
+          aria-label="Open points tracker"
+        >
+          <span className="text-xl md:text-2xl" aria-hidden="true">⭐</span>
+          <span className="text-base font-bold md:text-lg" style={{ color: progressColor }}>
+            {getTodayTotal(kidId)}
+          </span>
+          <span className="text-xs font-medium text-ink-soft md:text-sm">pts</span>
+        </button>
+      ) : null}
+
+      {/* Points tracker overlay */}
+      {showPoints ? (
+        <PointsTracker
+          kidId={kidId}
+          kidName={kidName}
+          kidEmoji={kidEmoji}
+          accentColor={progressColor}
+          onClose={() => setShowPoints(false)}
+        />
+      ) : null}
+
       {phase === "transitioning" ? (
         <QuestTransition
           kidEmoji={kidEmoji}
