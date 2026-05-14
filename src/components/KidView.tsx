@@ -45,6 +45,7 @@ export default function KidView({
   const [showSleepCeremony, setShowSleepCeremony] = useState(false);
   const [sleepCeremonyDismissed, setSleepCeremonyDismissed] = useState(false);
   const [showPoints, setShowPoints] = useState(false);
+  const [pointsVersion, setPointsVersion] = useState(0);
 
   // Detect when all night quests are done
   const nightQuests = useMemo(() => activeQuests.filter((q) => q.group === "night"), [activeQuests]);
@@ -106,21 +107,9 @@ export default function KidView({
         onRedoVibe={redoVibe}
       />
 
-      {/* Floating points button */}
+      {/* Floating points button — pointsVersion forces re-read after tracker closes */}
       {phase === "board" ? (
-        <button
-          type="button"
-          onClick={() => setShowPoints(true)}
-          className="fixed bottom-6 right-6 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 shadow-lg ring-1 ring-black/10 transition active:scale-95 md:bottom-8 md:right-8 md:h-16 md:px-6"
-          style={{ boxShadow: `0 4px 20px ${progressColor}30` }}
-          aria-label="Open points tracker"
-        >
-          <span className="text-xl md:text-2xl" aria-hidden="true">⭐</span>
-          <span className="text-base font-bold md:text-lg" style={{ color: progressColor }}>
-            {getTodayTotal(kidId)}
-          </span>
-          <span className="text-xs font-medium text-ink-soft md:text-sm">pts</span>
-        </button>
+        <PointsFab kidId={kidId} progressColor={progressColor} version={pointsVersion} onOpen={() => setShowPoints(true)} />
       ) : null}
 
       {/* Points tracker overlay */}
@@ -130,7 +119,10 @@ export default function KidView({
           kidName={kidName}
           kidEmoji={kidEmoji}
           accentColor={progressColor}
-          onClose={() => setShowPoints(false)}
+          onClose={() => {
+            setShowPoints(false);
+            setPointsVersion((v) => v + 1);
+          }}
         />
       ) : null}
 
@@ -155,5 +147,36 @@ export default function KidView({
         />
       ) : null}
     </>
+  );
+}
+
+/** Floating action button showing today's point total */
+function PointsFab({
+  kidId,
+  progressColor,
+  version,
+  onOpen,
+}: {
+  kidId: KidId;
+  progressColor: string;
+  version: number;
+  onOpen: () => void;
+}) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const total = useMemo(() => getTodayTotal(kidId), [kidId, version]);
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="fixed bottom-6 right-6 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 shadow-lg ring-1 ring-black/10 transition active:scale-95 md:bottom-8 md:right-8 md:h-16 md:px-6"
+      style={{ boxShadow: `0 4px 20px ${progressColor}30` }}
+      aria-label="Open points tracker"
+    >
+      <span className="text-xl md:text-2xl" aria-hidden="true">⭐</span>
+      <span className="text-base font-bold md:text-lg" style={{ color: progressColor }}>
+        {total}
+      </span>
+      <span className="text-xs font-medium text-ink-soft md:text-sm">pts</span>
+    </button>
   );
 }
