@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import PinGate from "@/components/PinGate";
 import PointPresetEditor from "@/components/PointPresetEditor";
 import QuestEditor from "@/components/QuestEditor";
 import KidWeekView from "@/components/WeekView";
 import { getTodayTotal } from "@/lib/points";
+import { getPin, lockSession, setPin } from "@/lib/pin";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
 
@@ -69,6 +71,7 @@ export default function ParentPage() {
   const filled = Object.values(answers).filter((v) => v && v.trim().length > 0).length;
 
   return (
+    <PinGate>
     <div className="min-h-screen w-full bg-[#f1ede4] px-6 py-6 md:px-10 md:py-10">
       <div className="mx-auto w-full max-w-3xl pb-24">
         <header className="mb-8 flex items-center justify-between">
@@ -217,10 +220,94 @@ export default function ParentPage() {
           </button>
         </div>
 
+        {/* PIN settings */}
+        <PinSettings />
+
         <p className="mt-10 text-center text-sm text-ink-soft">
           Thanks for showing up today.
         </p>
       </div>
     </div>
+    </PinGate>
+  );
+}
+
+function PinSettings() {
+  const [showPinChange, setShowPinChange] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  const [pinSaved, setPinSaved] = useState(false);
+
+  function handleSavePin() {
+    if (newPin.length === 4 && /^\d{4}$/.test(newPin)) {
+      setPin(newPin);
+      setNewPin("");
+      setShowPinChange(false);
+      setPinSaved(true);
+      setTimeout(() => setPinSaved(false), 2000);
+    }
+  }
+
+  function handleLock() {
+    lockSession();
+    window.location.reload();
+  }
+
+  return (
+    <section className="mt-12">
+      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5 md:p-7">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl" aria-hidden="true">🔒</span>
+            <h3 className="text-base font-bold">PIN lock</h3>
+            {pinSaved ? (
+              <span className="text-xs font-medium text-[#81b29a] animate-pop">Saved!</span>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPinChange(!showPinChange)}
+              className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink-soft ring-1 ring-black/10 hover:bg-bg-soft"
+            >
+              {showPinChange ? "Cancel" : "Change PIN"}
+            </button>
+            <button
+              type="button"
+              onClick={handleLock}
+              className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink-soft ring-1 ring-black/10 hover:bg-bg-soft"
+            >
+              Lock now
+            </button>
+          </div>
+        </div>
+
+        {showPinChange ? (
+          <div className="mt-4 flex items-center gap-3">
+            <label className="text-sm text-ink-soft">New 4-digit PIN:</label>
+            <input
+              type="tel"
+              inputMode="numeric"
+              maxLength={4}
+              value={newPin}
+              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="1234"
+              className="w-24 rounded-lg bg-bg-soft px-3 py-2 text-center text-lg font-bold tracking-widest outline-none ring-1 ring-black/10 focus:ring-[#81b29a]"
+            />
+            <button
+              type="button"
+              onClick={handleSavePin}
+              disabled={newPin.length !== 4}
+              className="rounded-full bg-[#81b29a] px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <p className="mt-2 text-xs text-ink-soft">
+            Current PIN: {getPin()} &middot; Keeps the parent page safe from curious taps.
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
