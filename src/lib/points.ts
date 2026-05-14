@@ -159,10 +159,10 @@ export type RewardPreset = {
 const DEFAULT_REWARDS: RewardPreset[] = [
   { id: "icecream", label: "Ice cream", emoji: "🍦", cost: 10 },
   { id: "dessert", label: "Dessert", emoji: "🍰", cost: 8 },
-  { id: "candy", label: "Candy", emoji: "🍬", cost: 5 },
-  { id: "screentime", label: "Screen time 15min", emoji: "📱", cost: 8 },
+  { id: "park", label: "Extra park time", emoji: "🛝", cost: 6 },
+  { id: "story", label: "Pick bedtime story", emoji: "📖", cost: 5 },
   { id: "toy", label: "Small toy", emoji: "🧸", cost: 15 },
-  { id: "stayup", label: "Stay up 15min", emoji: "🌙", cost: 6 },
+  { id: "outing", label: "Family outing pick", emoji: "🎡", cost: 20 },
 ];
 
 export function getRewards(): RewardPreset[] {
