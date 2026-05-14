@@ -10,133 +10,173 @@ export type VibePrompt = {
   id: string;
   question: string;
   hint?: string;
-  options: VibeOption[];
+  options: [VibeOption, VibeOption]; // always exactly 2
 };
 
 /**
- * Fun daily warm-up questions. Each one is silly/playful to get
- * ADHD kids engaged right away — no "how do you feel" therapy vibes.
- * The vibe key still maps to an energy level for response calibration.
+ * "This or That" daily warm-up. Only 2 choices so kids with
+ * decision paralysis don't freeze. Quick, silly, fun.
+ * Each pair is designed to be equally appealing — no wrong answer.
  */
 export const vibePrompts: VibePrompt[] = [
   {
-    id: "superpower",
-    question: "Pick your superpower for today!",
-    hint: "Choose wisely, hero.",
+    id: "fly-or-invisible",
+    question: "Would you rather…",
     options: [
-      { emoji: "⚡", label: "Super speed — ZOOM!", vibe: "zappy" },
-      { emoji: "🛡️", label: "Invisible shield", vibe: "chill" },
-      { emoji: "☁️", label: "Cloud riding — float away", vibe: "sleepy" },
-      { emoji: "🌊", label: "Control the weather", vibe: "cloudy" },
-      { emoji: "💥", label: "SUPER STRENGTH — SMASH!!", vibe: "wild" },
+      { emoji: "🦅", label: "Fly like an eagle", vibe: "zappy" },
+      { emoji: "👻", label: "Be invisible", vibe: "chill" },
     ],
   },
   {
-    id: "vehicle",
-    question: "How are you getting to Quest Land?",
-    hint: "Your ride is waiting!",
+    id: "rocket-or-snail",
+    question: "How are you getting there today?",
     options: [
-      { emoji: "🚀", label: "ROCKET — 3, 2, 1, GO!", vibe: "zappy" },
-      { emoji: "🚲", label: "Chill bike ride", vibe: "chill" },
-      { emoji: "🐌", label: "Riding a giant snail", vibe: "sleepy" },
-      { emoji: "🚂", label: "Slow train through the fog", vibe: "cloudy" },
-      { emoji: "🎢", label: "ROLLER COASTER BABY!!", vibe: "wild" },
+      { emoji: "🚀", label: "ROCKET — full speed!", vibe: "zappy" },
+      { emoji: "🐌", label: "Giant snail — slow ride", vibe: "sleepy" },
     ],
   },
   {
-    id: "breakfast",
-    question: "What did your brain eat for breakfast?",
-    hint: "Feed the brain monster!",
+    id: "pizza-or-icecream",
+    question: "Your brain fuel for today:",
     options: [
-      { emoji: "🍕", label: "PIZZA — I'm unstoppable", vibe: "zappy" },
-      { emoji: "🥞", label: "Pancakes — nice and easy", vibe: "chill" },
-      { emoji: "🍵", label: "Hot cocoa — still waking up", vibe: "sleepy" },
-      { emoji: "🥦", label: "Broccoli — somebody forced me", vibe: "cloudy" },
-      { emoji: "🌶️", label: "A GHOST PEPPER 🔥🔥🔥", vibe: "wild" },
+      { emoji: "🍕", label: "Pizza power!", vibe: "zappy" },
+      { emoji: "🍦", label: "Ice cream energy", vibe: "chill" },
     ],
   },
   {
-    id: "animal",
-    question: "Pick your animal sidekick!",
-    hint: "They're coming with you on today's quests.",
+    id: "lion-or-turtle",
+    question: "Pick your sidekick!",
     options: [
-      { emoji: "🦅", label: "Eagle — let's FLY", vibe: "zappy" },
-      { emoji: "🐢", label: "Turtle — slow & steady wins", vibe: "chill" },
-      { emoji: "🐨", label: "Koala — carry me plz", vibe: "sleepy" },
-      { emoji: "🦔", label: "Hedgehog — don't touch me", vibe: "cloudy" },
-      { emoji: "🐒", label: "MONKEY — chaos mode!!", vibe: "wild" },
+      { emoji: "🦁", label: "Lion — ROAR!", vibe: "zappy" },
+      { emoji: "🐢", label: "Turtle — slow & wise", vibe: "chill" },
     ],
   },
   {
-    id: "planet",
-    question: "Which planet are you from today?",
-    hint: "Space travelers only.",
+    id: "fire-or-water",
+    question: "Your element today:",
     options: [
-      { emoji: "☀️", label: "The Sun — I'm on FIRE", vibe: "zappy" },
-      { emoji: "🪐", label: "Saturn — floating in my rings", vibe: "chill" },
-      { emoji: "🌑", label: "The Moon — dark side, sleepy side", vibe: "sleepy" },
-      { emoji: "🌫️", label: "Neptune — cold and far away", vibe: "cloudy" },
-      { emoji: "💫", label: "A comet — CAN'T STOP ME!", vibe: "wild" },
+      { emoji: "🔥", label: "FIRE — let's go!", vibe: "wild" },
+      { emoji: "🌊", label: "Water — flow with it", vibe: "chill" },
     ],
   },
   {
-    id: "hat",
-    question: "Pick your magic hat!",
-    hint: "It gives you special powers today.",
+    id: "sword-or-shield",
+    question: "Choose your quest gear!",
     options: [
-      { emoji: "👑", label: "Crown — I rule today!", vibe: "zappy" },
-      { emoji: "🎩", label: "Top hat — classy vibes", vibe: "chill" },
-      { emoji: "🧢", label: "Cap pulled low — leave me alone", vibe: "sleepy" },
-      { emoji: "🪖", label: "Helmet — ready for battle", vibe: "cloudy" },
-      { emoji: "🤡", label: "CLOWN WIG — pure chaos!!", vibe: "wild" },
+      { emoji: "⚔️", label: "Lightning sword", vibe: "zappy" },
+      { emoji: "🛡️", label: "Magic shield", vibe: "chill" },
     ],
   },
   {
-    id: "sound",
-    question: "If you were a sound, what would you be?",
-    hint: "Make the noise in your head right now.",
+    id: "sun-or-moon",
+    question: "Which one are you today?",
     options: [
-      { emoji: "🎺", label: "TRUMPET — BA BA BAAAA!", vibe: "zappy" },
-      { emoji: "🎵", label: "Humming a tune", vibe: "chill" },
-      { emoji: "😴", label: "Snoring ZZZZZZ", vibe: "sleepy" },
-      { emoji: "🌧️", label: "Rain on a window", vibe: "cloudy" },
-      { emoji: "💣", label: "BOOM BOOM POW!!!", vibe: "wild" },
+      { emoji: "☀️", label: "The Sun — full beam!", vibe: "zappy" },
+      { emoji: "🌙", label: "The Moon — quiet power", vibe: "sleepy" },
     ],
   },
   {
-    id: "weapon",
-    question: "Choose your quest weapon!",
-    hint: "Every hero needs one.",
+    id: "dino-or-cat",
+    question: "Secret identity check!",
     options: [
-      { emoji: "⚔️", label: "Lightning sword — ZAP!", vibe: "zappy" },
-      { emoji: "🏹", label: "Bow & arrow — cool and focused", vibe: "chill" },
-      { emoji: "🧸", label: "A teddy bear — don't judge", vibe: "sleepy" },
-      { emoji: "🛡️", label: "Giant shield — protect mode", vibe: "cloudy" },
-      { emoji: "🪄", label: "WAND — random spells!! AHHH!", vibe: "wild" },
+      { emoji: "🦖", label: "T-Rex — STOMP STOMP", vibe: "wild" },
+      { emoji: "🐱", label: "Cat — I do what I want", vibe: "cloudy" },
     ],
   },
   {
-    id: "size",
-    question: "How big are you today?",
-    hint: "Size = your energy level.",
+    id: "crown-or-cape",
+    question: "Today you're wearing:",
     options: [
-      { emoji: "🦖", label: "DINOSAUR-sized — RAWR!", vibe: "zappy" },
-      { emoji: "🐕", label: "Normal kid-sized", vibe: "chill" },
-      { emoji: "🐛", label: "Tiny caterpillar", vibe: "sleepy" },
-      { emoji: "👻", label: "Invisible — you can't see me", vibe: "cloudy" },
-      { emoji: "🌋", label: "VOLCANO — about to EXPLODE!!", vibe: "wild" },
+      { emoji: "👑", label: "A golden crown", vibe: "zappy" },
+      { emoji: "🦸", label: "A superhero cape", vibe: "wild" },
     ],
   },
   {
-    id: "snack",
-    question: "What snack would you fight a dragon for?",
-    hint: "The dragon has your favorite...",
+    id: "dragon-or-panda",
+    question: "You're riding a…",
     options: [
-      { emoji: "🍦", label: "ICE CREAM — fight me, dragon!", vibe: "zappy" },
-      { emoji: "🍪", label: "A cookie — worth the risk", vibe: "chill" },
-      { emoji: "🛋️", label: "The couch — let someone else fight", vibe: "sleepy" },
-      { emoji: "😤", label: "Nothing — I'm already grumpy", vibe: "cloudy" },
-      { emoji: "🍕", label: "THE WHOLE PIZZA — CHARGE!!!", vibe: "wild" },
+      { emoji: "🐉", label: "DRAGON — breathe fire!", vibe: "wild" },
+      { emoji: "🐼", label: "Giant panda — so fluffy", vibe: "chill" },
+    ],
+  },
+  {
+    id: "volcano-or-cloud",
+    question: "What's your energy like?",
+    options: [
+      { emoji: "🌋", label: "VOLCANO — about to blow!", vibe: "wild" },
+      { emoji: "☁️", label: "Soft cloud — floating", vibe: "sleepy" },
+    ],
+  },
+  {
+    id: "ninja-or-wizard",
+    question: "Pick your class!",
+    options: [
+      { emoji: "🥷", label: "Ninja — fast & sneaky", vibe: "zappy" },
+      { emoji: "🧙", label: "Wizard — magic spells", vibe: "chill" },
+    ],
+  },
+  {
+    id: "trumpet-or-drums",
+    question: "If you were a sound:",
+    options: [
+      { emoji: "🎺", label: "TRUMPET — BA BA BAAA!", vibe: "zappy" },
+      { emoji: "🥁", label: "DRUMS — boom boom boom", vibe: "wild" },
+    ],
+  },
+  {
+    id: "race-or-nap",
+    question: "Right now I want to…",
+    options: [
+      { emoji: "🏃", label: "Run a race!", vibe: "zappy" },
+      { emoji: "🛋️", label: "Nap on the couch", vibe: "sleepy" },
+    ],
+  },
+  {
+    id: "space-or-ocean",
+    question: "Where are we adventuring?",
+    options: [
+      { emoji: "🚀", label: "Outer space!", vibe: "zappy" },
+      { emoji: "🐙", label: "Deep ocean!", vibe: "chill" },
+    ],
+  },
+  {
+    id: "cake-or-popcorn",
+    question: "Quest snack!",
+    options: [
+      { emoji: "🎂", label: "Birthday cake", vibe: "zappy" },
+      { emoji: "🍿", label: "Movie popcorn", vibe: "chill" },
+    ],
+  },
+  {
+    id: "big-or-tiny",
+    question: "Today I am…",
+    options: [
+      { emoji: "🦕", label: "GIANT — bigger than a house!", vibe: "wild" },
+      { emoji: "🐜", label: "Tiny ant — sneak everywhere", vibe: "chill" },
+    ],
+  },
+  {
+    id: "robot-or-alien",
+    question: "You're actually a…",
+    options: [
+      { emoji: "🤖", label: "Robot — beep boop!", vibe: "zappy" },
+      { emoji: "👽", label: "Alien — take me to your leader", vibe: "chill" },
+    ],
+  },
+  {
+    id: "hammer-or-wand",
+    question: "Pick your tool!",
+    options: [
+      { emoji: "🔨", label: "Thor's hammer — SMASH!", vibe: "wild" },
+      { emoji: "🪄", label: "Magic wand — poof!", vibe: "chill" },
+    ],
+  },
+  {
+    id: "cheetah-or-sloth",
+    question: "Your speed today:",
+    options: [
+      { emoji: "🐆", label: "Cheetah — FASTEST EVER", vibe: "zappy" },
+      { emoji: "🦥", label: "Sloth — zero rush", vibe: "sleepy" },
     ],
   },
 ];
