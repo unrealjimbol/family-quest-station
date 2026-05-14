@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import PinGate from "@/components/PinGate";
 import PointPresetEditor from "@/components/PointPresetEditor";
+import RewardPresetEditor from "@/components/RewardPresetEditor";
 import QuestEditor from "@/components/QuestEditor";
 import KidWeekView from "@/components/WeekView";
 import { getTodayTotal } from "@/lib/points";
@@ -140,7 +141,7 @@ export default function ParentPage() {
               Daily points
             </h2>
             <p className="mt-2 text-sm text-ink-soft md:text-base">
-              Today&apos;s totals &amp; customize the preset buttons.
+              Today&apos;s totals, earning presets &amp; reward shop.
             </p>
           </div>
 
@@ -165,7 +166,10 @@ export default function ParentPage() {
             </div>
           </div>
 
-          <PointPresetEditor />
+          <div className="space-y-4">
+            <PointPresetEditor />
+            <RewardPresetEditor />
+          </div>
         </section>
 
         <section className="mt-12 text-center">

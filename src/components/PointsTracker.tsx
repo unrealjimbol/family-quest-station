@@ -4,14 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import {
   addPoint,
   getPresets,
+  getRewards,
   getToday,
   getTodayTotal,
   removePoint,
+  spendPoints,
   type DailyPoints,
   type PointPreset,
+  type RewardPreset,
 } from "@/lib/points";
-import { playCoin } from "@/lib/sounds";
+import { playCoin, playSpend } from "@/lib/sounds";
 import type { KidId } from "@/lib/types";
+
+type Tab = "earn" | "spend";
 
 type Props = {
   kidId: KidId;
@@ -31,10 +36,11 @@ export default function PointsTracker({
   const [day, setDay] = useState<DailyPoints>(() => getToday(kidId));
   const [total, setTotal] = useState(() => getTodayTotal(kidId));
   const [presets] = useState<PointPreset[]>(() => getPresets());
+  const [rewards] = useState<RewardPreset[]>(() => getRewards());
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [tab, setTab] = useState<Tab>("earn");
 
-  // Refresh from storage (in case parent page changes things)
   const refresh = useCallback(() => {
     const d = getToday(kidId);
     setDay(d);
@@ -59,6 +65,16 @@ export default function PointsTracker({
     setTimeout(() => setJustAdded((c) => (c === preset.id ? null : c)), 500);
   }
 
+  function handleSpend(reward: RewardPreset) {
+    if (total < reward.cost) return; // not enough points
+    const updated = spendPoints(kidId, `${reward.emoji} ${reward.label}`, reward.cost);
+    setDay(updated);
+    setTotal(updated.entries.reduce((s, e) => s + e.points, 0));
+    playSpend();
+    setJustAdded(reward.id);
+    setTimeout(() => setJustAdded((c) => (c === reward.id ? null : c)), 500);
+  }
+
   function handleRemove(entryId: string) {
     const updated = removePoint(kidId, entryId);
     setDay(updated);
@@ -66,6 +82,8 @@ export default function PointsTracker({
   }
 
   const sortedEntries = [...day.entries].sort((a, b) => b.time - a.time);
+  const earned = day.entries.filter((e) => e.points > 0).reduce((s, e) => s + e.points, 0);
+  const spent = day.entries.filter((e) => e.points < 0).reduce((s, e) => s + Math.abs(e.points), 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
@@ -87,7 +105,9 @@ export default function PointsTracker({
             </span>
             <div>
               <h2 className="text-lg font-bold">{kidName}&apos;s Points</h2>
-              <p className="text-xs text-ink-soft">Tap to record good moments</p>
+              <p className="text-xs text-ink-soft">
+                {tab === "earn" ? "Tap to record good moments" : "Spend points on rewards"}
+              </p>
             </div>
           </div>
           <button
@@ -102,12 +122,10 @@ export default function PointsTracker({
 
         {/* Score display */}
         <div
-          className="mb-5 flex items-center justify-center gap-3 rounded-2xl p-4"
+          className="mb-4 flex items-center justify-center gap-4 rounded-2xl p-4"
           style={{ backgroundColor: `${accentColor}12` }}
         >
-          <span className="text-3xl" aria-hidden="true">
-            ⭐
-          </span>
+          <span className="text-3xl" aria-hidden="true">⭐</span>
           <div className="text-center">
             <div
               className="text-4xl font-bold tabular-nums"
@@ -117,34 +135,93 @@ export default function PointsTracker({
             </div>
             <div className="text-xs font-medium text-ink-soft">points today</div>
           </div>
+          {(earned > 0 || spent > 0) ? (
+            <div className="text-xs text-ink-soft leading-relaxed">
+              <div className="text-[#81b29a] font-semibold">+{earned} earned</div>
+              {spent > 0 ? <div className="text-[#e07a5f] font-semibold">-{spent} spent</div> : null}
+            </div>
+          ) : null}
         </div>
 
-        {/* Preset grid */}
-        <div className="mb-4 grid grid-cols-2 gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => handleAdd(p)}
-              className={`flex items-center gap-2.5 rounded-xl bg-white px-3 py-3 text-left shadow-sm ring-1 ring-black/5 transition active:scale-[0.97] ${
-                justAdded === p.id ? "animate-coin-pop" : ""
-              }`}
-            >
-              <span className="text-xl" aria-hidden="true">
-                {p.emoji}
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-semibold">{p.label}</div>
-                <div
-                  className="text-xs font-bold"
-                  style={{ color: accentColor }}
-                >
-                  +{p.points}
-                </div>
-              </div>
-            </button>
-          ))}
+        {/* Tab switcher */}
+        <div className="mb-4 flex rounded-xl bg-white p-1 ring-1 ring-black/5">
+          <button
+            type="button"
+            onClick={() => setTab("earn")}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
+              tab === "earn"
+                ? "bg-[#81b29a] text-white shadow-sm"
+                : "text-ink-soft hover:text-ink"
+            }`}
+          >
+            ⭐ Earn
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("spend")}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
+              tab === "spend"
+                ? "bg-[#e07a5f] text-white shadow-sm"
+                : "text-ink-soft hover:text-ink"
+            }`}
+          >
+            🎁 Spend
+          </button>
         </div>
+
+        {/* Earn presets */}
+        {tab === "earn" ? (
+          <div className="mb-4 grid grid-cols-2 gap-2">
+            {presets.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleAdd(p)}
+                className={`flex items-center gap-2.5 rounded-xl bg-white px-3 py-3 text-left shadow-sm ring-1 ring-black/5 transition active:scale-[0.97] ${
+                  justAdded === p.id ? "animate-coin-pop" : ""
+                }`}
+              >
+                <span className="text-xl" aria-hidden="true">{p.emoji}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold">{p.label}</div>
+                  <div className="text-xs font-bold text-[#81b29a]">+{p.points}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {/* Spend rewards */}
+        {tab === "spend" ? (
+          <div className="mb-4 grid grid-cols-2 gap-2">
+            {rewards.map((r) => {
+              const canAfford = total >= r.cost;
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => handleSpend(r)}
+                  disabled={!canAfford}
+                  className={`flex items-center gap-2.5 rounded-xl px-3 py-3 text-left shadow-sm ring-1 transition ${
+                    canAfford
+                      ? "bg-white ring-black/5 active:scale-[0.97]"
+                      : "bg-white/50 ring-black/5 opacity-50 cursor-not-allowed"
+                  } ${justAdded === r.id ? "animate-coin-pop" : ""}`}
+                >
+                  <span className={`text-xl ${canAfford ? "" : "grayscale"}`} aria-hidden="true">
+                    {r.emoji}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-semibold">{r.label}</div>
+                    <div className={`text-xs font-bold ${canAfford ? "text-[#e07a5f]" : "text-ink-soft"}`}>
+                      -{r.cost} pts
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
         {/* History toggle */}
         {sortedEntries.length > 0 ? (
@@ -169,10 +246,11 @@ export default function PointsTracker({
                   >
                     <span className="flex-1 truncate">{entry.label}</span>
                     <span
-                      className="shrink-0 text-xs font-bold"
-                      style={{ color: accentColor }}
+                      className={`shrink-0 text-xs font-bold ${
+                        entry.points >= 0 ? "text-[#81b29a]" : "text-[#e07a5f]"
+                      }`}
                     >
-                      +{entry.points}
+                      {entry.points >= 0 ? "+" : ""}{entry.points}
                     </span>
                     <span className="shrink-0 text-xs text-ink-soft">
                       {new Date(entry.time).toLocaleTimeString([], {

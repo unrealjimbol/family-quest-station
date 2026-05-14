@@ -3,6 +3,7 @@ import { todayStr } from "./storage";
 
 const KEY = "fqs.v1.points";
 const PRESETS_KEY = "fqs.v1.pointPresets";
+const REWARDS_KEY = "fqs.v1.rewardPresets";
 
 export type PointEntry = {
   id: string;
@@ -144,4 +145,65 @@ export function resetPresets() {
   try {
     window.localStorage.removeItem(PRESETS_KEY);
   } catch {}
+}
+
+// ── Reward (spend) presets ──────────────────────────────────
+
+export type RewardPreset = {
+  id: string;
+  label: string;
+  emoji: string;
+  cost: number; // positive number — will be subtracted
+};
+
+const DEFAULT_REWARDS: RewardPreset[] = [
+  { id: "icecream", label: "Ice cream", emoji: "🍦", cost: 10 },
+  { id: "dessert", label: "Dessert", emoji: "🍰", cost: 8 },
+  { id: "candy", label: "Candy", emoji: "🍬", cost: 5 },
+  { id: "screentime", label: "Screen time 15min", emoji: "📱", cost: 8 },
+  { id: "toy", label: "Small toy", emoji: "🧸", cost: 15 },
+  { id: "stayup", label: "Stay up 15min", emoji: "🌙", cost: 6 },
+];
+
+export function getRewards(): RewardPreset[] {
+  if (typeof window === "undefined") return DEFAULT_REWARDS;
+  try {
+    const raw = window.localStorage.getItem(REWARDS_KEY);
+    if (!raw) return DEFAULT_REWARDS;
+    const parsed = JSON.parse(raw) as RewardPreset[];
+    return parsed.length > 0 ? parsed : DEFAULT_REWARDS;
+  } catch {
+    return DEFAULT_REWARDS;
+  }
+}
+
+export function saveRewards(rewards: RewardPreset[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(REWARDS_KEY, JSON.stringify(rewards));
+  } catch {}
+}
+
+export function resetRewards() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(REWARDS_KEY);
+  } catch {}
+}
+
+/** Spend points on a reward — records a negative entry */
+export function spendPoints(kidId: KidId, label: string, cost: number): DailyPoints {
+  const all = loadAll();
+  const k = dayKey(kidId);
+  const current = all[k] ?? { date: todayStr(), entries: [] };
+  const entry: PointEntry = {
+    id: `s_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    label,
+    points: -cost, // negative = spent
+    time: Date.now(),
+  };
+  const updated = { ...current, entries: [...current.entries, entry] };
+  all[k] = updated;
+  saveAll(all);
+  return updated;
 }

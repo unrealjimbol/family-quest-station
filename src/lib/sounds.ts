@@ -118,6 +118,26 @@ export function playCoin() {
   });
 }
 
+/** Playful "spend" sound — descending two-note chime */
+export function playSpend() {
+  const c = getCtx();
+  if (!c) return;
+  const notes = [784, 523]; // G5 C5 — descending
+  notes.forEach((freq, i) => {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = "triangle";
+    o.connect(g);
+    g.connect(c.destination);
+    const t = c.currentTime + i * 0.1;
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.12, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    o.start(t);
+    o.stop(t + 0.2);
+  });
+}
+
 /** Soft low tone for sleep ceremony breathing */
 export function playSoftTone(freq = 220) {
   const c = getCtx();
