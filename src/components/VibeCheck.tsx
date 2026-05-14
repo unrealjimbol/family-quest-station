@@ -1,16 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   pickGreeting,
   pickPromptForToday,
   pickResponse,
   type VibeOption,
 } from "@/data/vibePrompts";
+import { playTick, playChime } from "@/lib/sounds";
 import { todayStr } from "@/lib/storage";
 import { updateState } from "@/lib/store";
 import type { KidId } from "@/lib/types";
+
+const TAP_TARGET = 10; // taps to fill the ring
+
+type Phase = "question" | "powerup" | "done";
 
 type Props = {
   kidId: KidId;
@@ -32,6 +37,12 @@ export default function VibeCheck({
   }, [kidId]);
 
   const [picked, setPicked] = useState<VibeOption | null>(null);
+  const [phase, setPhase] = useState<Phase>("question");
+  const [taps, setTaps] = useState(0);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
+  const particleId = useRef(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const response = useMemo(() => {
     if (!picked) return null;
     const seed = new Date().getMinutes() + new Date().getSeconds();
@@ -58,7 +69,58 @@ export default function VibeCheck({
         },
       },
     }));
+    setPhase("powerup");
   }
+
+  // Sparkle emojis that fly out on tap
+  const sparkles = ["✨", "⭐", "💥", "🔥", "⚡", "💫", "🌟", "🎯"];
+
+  const handleTap = useCallback(() => {
+    if (phase !== "powerup") return;
+    const next = taps + 1;
+    setTaps(next);
+    playTick();
+
+    // Spawn 2-3 particles at random positions around the button
+    const newParticles = Array.from({ length: 2 + Math.floor(Math.random() * 2) }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 80;
+      return {
+        id: ++particleId.current,
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        emoji: sparkles[Math.floor(Math.random() * sparkles.length)],
+      };
+    });
+    setParticles((prev) => [...prev, ...newParticles]);
+
+    // Clean up old particles
+    setTimeout(() => {
+      setParticles((prev) => prev.filter((p) => !newParticles.some((np) => np.id === p.id)));
+    }, 600);
+
+    if (next >= TAP_TARGET) {
+      playChime();
+      setTimeout(() => setPhase("done"), 400);
+    }
+  }, [phase, taps, sparkles]);
+
+  // Progress ring calculations
+  const progress = Math.min(taps / TAP_TARGET, 1);
+  const circumference = 2 * Math.PI * 58; // radius 58
+  const strokeDashoffset = circumference * (1 - progress);
+
+  // Scale grows with taps
+  const scale = 1 + (taps / TAP_TARGET) * 0.5;
+
+  // Encourage text
+  const encourageText = taps === 0
+    ? "TAP TAP TAP! 👆"
+    : taps < TAP_TARGET * 0.5
+      ? "Keep going!! 🔥"
+      : taps < TAP_TARGET
+        ? "Almost there!! ⚡"
+        : "POWERED UP! 💥";
 
   return (
     <div className="min-h-screen w-full px-5 py-6 md:px-10 md:py-12">
@@ -70,7 +132,7 @@ export default function VibeCheck({
           >
             ← Home
           </Link>
-          {!picked ? (
+          {phase === "question" ? (
             <button
               type="button"
               onClick={onContinue}
@@ -81,7 +143,8 @@ export default function VibeCheck({
           ) : null}
         </header>
 
-        {!picked ? (
+        {/* Phase 1: Question */}
+        {phase === "question" ? (
           <>
             <div className="text-center">
               <div
@@ -126,35 +189,143 @@ export default function VibeCheck({
           </>
         ) : null}
 
-        {picked && response ? (
-          <div className="flex flex-col items-center text-center">
+        {/* Phase 2: Power-up tap game */}
+        {phase === "powerup" && picked ? (
+          <div className="flex flex-col items-center pt-8 text-center md:pt-16">
+            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft md:text-base">
+              Power up your choice!
+            </p>
+            <p className="mt-1 text-lg font-bold md:text-2xl">
+              {picked.label}
+            </p>
+
+            {/* Tap zone */}
+            <div className="relative mt-8 flex items-center justify-center" style={{ width: 180, height: 180 }}>
+              {/* Progress ring */}
+              <svg
+                className="absolute inset-0"
+                width="180"
+                height="180"
+                viewBox="0 0 140 140"
+              >
+                {/* Background ring */}
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="58"
+                  fill="none"
+                  stroke="rgba(0,0,0,0.06)"
+                  strokeWidth="6"
+                />
+                {/* Progress ring */}
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="58"
+                  fill="none"
+                  stroke={accentColor}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  transform="rotate(-90 70 70)"
+                  className="transition-all duration-150"
+                />
+              </svg>
+
+              {/* Tap button */}
+              <button
+                ref={buttonRef}
+                type="button"
+                onClick={handleTap}
+                className="relative z-10 flex items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-100 active:scale-90"
+                style={{
+                  width: 120,
+                  height: 120,
+                  transform: `scale(${scale})`,
+                  outlineColor: accentColor,
+                  boxShadow: `0 0 ${taps * 3}px ${accentColor}40, inset 0 0 0 2px ${accentColor}30`,
+                }}
+                aria-label="Tap to power up"
+              >
+                <span className="text-5xl md:text-6xl" aria-hidden="true">
+                  {picked.emoji}
+                </span>
+              </button>
+
+              {/* Particles */}
+              {particles.map((p) => (
+                <span
+                  key={p.id}
+                  className="pointer-events-none absolute text-xl md:text-2xl"
+                  style={{
+                    left: "50%",
+                    top: "50%",
+                    animation: "particle-fly 600ms ease-out forwards",
+                    ["--px" as string]: `${p.x}px`,
+                    ["--py" as string]: `${p.y}px`,
+                  }}
+                  aria-hidden="true"
+                >
+                  {p.emoji}
+                </span>
+              ))}
+            </div>
+
+            {/* Encourage text */}
+            <p className="mt-6 text-xl font-bold md:text-2xl" key={encourageText}>
+              {encourageText}
+            </p>
+
+            {/* Tap counter */}
+            <div className="mt-3 flex items-center gap-1">
+              {Array.from({ length: TAP_TARGET }, (_, i) => (
+                <span
+                  key={i}
+                  className="block h-2.5 w-2.5 rounded-full transition-all duration-150 md:h-3 md:w-3"
+                  style={{
+                    backgroundColor: i < taps ? accentColor : "rgba(0,0,0,0.1)",
+                    transform: i < taps ? "scale(1.2)" : "scale(1)",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {/* Phase 3: Done — show response */}
+        {phase === "done" && picked && response ? (
+          <div className="flex flex-col items-center pt-4 text-center md:pt-8">
             <div
-              className="text-7xl animate-pop md:text-8xl"
+              className="text-7xl animate-burst md:text-8xl"
               aria-hidden="true"
             >
-              {kidEmoji}
+              {picked.emoji}
             </div>
             <div
               className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 ring-1 ring-black/5 md:px-5 md:py-2.5"
               aria-label="You picked"
             >
               <span className="text-2xl md:text-3xl" aria-hidden="true">
-                {picked.emoji}
+                {kidEmoji}
               </span>
               <span className="text-sm font-semibold md:text-base">
                 {picked.label}
               </span>
             </div>
 
-            <p className="mt-6 max-w-xl text-2xl font-bold leading-snug md:text-3xl">
+            <p
+              className="mt-6 max-w-xl text-2xl font-bold leading-snug md:text-3xl"
+              style={{ animation: "fadeInSoft 500ms ease-out" }}
+            >
               {response}
             </p>
 
             <button
               type="button"
               onClick={onContinue}
-              className="mt-8 w-full rounded-full px-8 py-4 text-lg font-bold text-white shadow-sm transition active:scale-[0.99] md:w-auto md:px-12 md:text-xl"
-              style={{ backgroundColor: accentColor }}
+              className="mt-8 w-full rounded-full px-8 py-4 text-lg font-bold text-white shadow-sm transition active:scale-[0.98] md:w-auto md:px-12 md:text-xl"
+              style={{ backgroundColor: accentColor, animation: "fadeInSoft 600ms ease-out 200ms both" }}
             >
               Let&apos;s go! →
             </button>
