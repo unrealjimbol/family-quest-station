@@ -14,7 +14,7 @@ export default function ElioPage() {
         <KidView
           kidId="elio"
           kidName="Elio"
-          kidEmoji="🦊"
+          kidEmoji="🐼"
           quests={elioQuests}
           accent={{
             tile: "bg-[#fde4cf] text-[#e07a5f]",

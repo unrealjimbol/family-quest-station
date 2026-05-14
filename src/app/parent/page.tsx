@@ -105,7 +105,7 @@ export default function ParentPage() {
           <KidWeekView
             kidId="elio"
             kidName="Elio"
-            kidEmoji="🦊"
+            kidEmoji="🐼"
             accentColor="#e07a5f"
           />
           <KidWeekView
@@ -128,7 +128,7 @@ export default function ParentPage() {
             </p>
           </div>
           <div className="space-y-4">
-            <QuestEditor kidId="elio" kidName="Elio" kidEmoji="🦊" />
+            <QuestEditor kidId="elio" kidName="Elio" kidEmoji="🐼" />
             <QuestEditor kidId="emilia" kidName="Emilia" kidEmoji="🦄" />
           </div>
         </section>
@@ -147,7 +147,7 @@ export default function ParentPage() {
 
           <div className="mb-4 flex justify-center gap-6">
             <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 shadow-sm ring-1 ring-black/5">
-              <span className="text-2xl" aria-hidden="true">🦊</span>
+              <span className="text-2xl" aria-hidden="true">🐼</span>
               <div>
                 <div className="text-xs text-ink-soft">Elio</div>
                 <div className="text-xl font-bold text-[#e07a5f]">

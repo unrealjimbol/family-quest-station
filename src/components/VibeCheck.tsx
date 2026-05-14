@@ -91,7 +91,7 @@ export default function VibeCheck({
                 {kidEmoji}
               </div>
               <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink-soft md:mt-4 md:text-sm">
-                Vibe check
+                Daily warm-up
               </p>
               <h1 className="mt-1 text-2xl font-bold leading-tight md:mt-2 md:text-4xl">
                 {greeting}
@@ -112,9 +112,10 @@ export default function VibeCheck({
                   <button
                     type="button"
                     onClick={() => pick(opt)}
-                    className="flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3 text-left text-base font-semibold shadow-sm ring-1 ring-black/5 transition active:scale-[0.99] md:gap-4 md:px-5 md:py-5 md:text-xl"
+                    className="flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3 text-left text-base font-semibold shadow-sm ring-1 ring-black/5 transition active:scale-[0.97] hover:ring-2 md:gap-4 md:px-5 md:py-5 md:text-xl"
+                    style={{ ["--tw-ring-color" as string]: `${accentColor}40` }}
                   >
-                    <span className="text-2xl md:text-4xl" aria-hidden="true">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-bg-soft text-2xl md:h-14 md:w-14 md:text-4xl" aria-hidden="true">
                       {opt.emoji}
                     </span>
                     <span className="flex-1">{opt.label}</span>

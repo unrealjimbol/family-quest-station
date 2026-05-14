@@ -14,7 +14,7 @@ const cards: Card[] = [
     href: "/elio",
     name: "Elio",
     role: "Daily Quests",
-    emoji: "🦊",
+    emoji: "🐼",
     bg: "bg-[#fde4cf]",
     ring: "ring-[#e07a5f]/30",
   },
