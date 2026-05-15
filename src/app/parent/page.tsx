@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import DataBackup from "@/components/DataBackup";
 import PinGate from "@/components/PinGate";
 import PointPresetEditor from "@/components/PointPresetEditor";
 import RewardPresetEditor from "@/components/RewardPresetEditor";
@@ -226,6 +227,11 @@ export default function ParentPage() {
 
         {/* PIN settings */}
         <PinSettings />
+
+        {/* Data backup/restore */}
+        <section className="mt-8">
+          <DataBackup />
+        </section>
 
         <p className="mt-10 text-center text-sm text-ink-soft">
           Thanks for showing up today.
