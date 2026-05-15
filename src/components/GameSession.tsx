@@ -13,7 +13,10 @@ import {
   COOLDOWN_MINUTES,
   PLAY_LIMIT_MINUTES,
 } from "@/lib/gameTimer";
+import { getBalance, spendPoints } from "@/lib/points";
 import type { KidId } from "@/lib/types";
+
+const UNLOCK_COST = 10;
 
 type GameId = "memory" | "echo" | "color" | "breath";
 
@@ -70,6 +73,8 @@ export default function GameSession({
   const [picked, setPicked] = useState<GameId | null>(null);
   const [timeUp, setTimeUp] = useState(false);
   const [cooldownMs, setCooldownMs] = useState(0);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [notEnough, setNotEnough] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check cooldown on open
@@ -91,6 +96,8 @@ export default function GameSession({
       setPicked(null);
       setTimeUp(false);
       setCooldownMs(0);
+      setShowUnlock(false);
+      setNotEnough(false);
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
@@ -150,7 +157,23 @@ export default function GameSession({
     setPicked(null);
   }
 
+  function handleUnlockGame() {
+    const balance = getBalance(kidId);
+    if (balance < UNLOCK_COST) {
+      setNotEnough(true);
+      setTimeout(() => setNotEnough(false), 2500);
+      return;
+    }
+    spendPoints(kidId, "Unlock new game 🎮", UNLOCK_COST);
+    setShowUnlock(true);
+  }
+
   if (!open) return null;
+
+  // "Go find dad" screen after spending points
+  if (showUnlock) {
+    return <UnlockScreen onClose={close} />;
+  }
 
   // Time's up screen — cute and encouraging
   if (timeUp) {
@@ -229,6 +252,31 @@ export default function GameSession({
               </div>
             </button>
           ))}
+
+          {/* Unlock new game option */}
+          <button
+            type="button"
+            onClick={handleUnlockGame}
+            className="group relative flex items-center gap-4 rounded-3xl bg-gradient-to-br from-amber-50 to-yellow-100 p-4 text-left shadow-sm ring-1 ring-amber-200/60 transition active:scale-[0.98] md:p-5"
+          >
+            <span className="text-5xl md:text-6xl" aria-hidden="true">🔓</span>
+            <div className="min-w-0 flex-1">
+              <div className="text-lg font-bold md:text-xl">New Game!</div>
+              <div className="text-sm text-ink-soft md:text-base">
+                Spend ⭐ {UNLOCK_COST} pts to unlock
+              </div>
+            </div>
+            <span className="rounded-full bg-amber-400/20 px-2.5 py-1 text-xs font-bold text-amber-700 ring-1 ring-amber-300/40">
+              ⭐ {UNLOCK_COST}
+            </span>
+            {notEnough ? (
+              <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-white/90 backdrop-blur-sm animate-pop">
+                <p className="text-base font-bold text-red-400">
+                  Not enough stars! Need ⭐ {UNLOCK_COST} 😅
+                </p>
+              </div>
+            ) : null}
+          </button>
         </div>
         <p className="mt-5 text-center text-xs text-ink-soft md:text-sm">
           {PLAY_LIMIT_MINUTES} minutes of game time. Pick any. Just for fun!
@@ -265,6 +313,39 @@ function TimeUpScreen({ onClose }: { onClose: () => void }) {
             Time for quests or other adventures!
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Unlock screen — go find dad! */
+function UnlockScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gradient-to-b from-amber-50 to-[#fdf6ec] p-6">
+      <div className="flex max-w-sm flex-col items-center text-center">
+        <div className="text-8xl animate-bob" aria-hidden="true">🎉</div>
+        <h2 className="mt-6 text-3xl font-bold md:text-4xl">
+          New game unlocked!
+        </h2>
+        <p className="mt-4 text-lg text-ink-soft md:text-xl">
+          ⭐ {UNLOCK_COST} stars spent — nice save!
+        </p>
+        <div className="mt-6 rounded-3xl bg-white/80 px-8 py-6 ring-1 ring-black/5 shadow-sm">
+          <div className="text-5xl mb-3" aria-hidden="true">👨</div>
+          <p className="text-xl font-bold md:text-2xl">
+            找爸爸去做一个新的！
+          </p>
+          <p className="mt-2 text-base text-ink-soft md:text-lg">
+            Go find Dad to set up a new game for you!
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-8 rounded-full bg-amber-400 px-8 py-4 text-lg font-bold text-white shadow-sm transition active:scale-[0.97]"
+        >
+          Okay! Going now! 🏃
+        </button>
       </div>
     </div>
   );
