@@ -102,7 +102,7 @@ export default function DataBackup() {
       >
         <div className="flex items-center gap-2">
           <span className="text-xl" aria-hidden="true">💾</span>
-          <h3 className="text-base font-bold">Data backup</h3>
+          <h3 className="text-base font-bold">数据备份</h3>
         </div>
         <span className="text-sm text-ink-soft" aria-hidden="true">
           {expanded ? "▲" : "▼"}
@@ -112,7 +112,7 @@ export default function DataBackup() {
       {expanded ? (
         <div className="mt-4 space-y-3">
           <p className="text-sm text-ink-soft">
-            Export all app data to a JSON file, or restore from a backup.
+            导出所有数据为 JSON 文件，或从备份恢复。
           </p>
 
           {/* Export */}
@@ -122,13 +122,13 @@ export default function DataBackup() {
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#81b29a] px-4 py-3 font-bold text-white shadow-sm transition active:scale-[0.98]"
           >
             <span aria-hidden="true">📤</span>
-            Export backup
+            导出备份
           </button>
 
           {/* Import */}
           <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 font-bold text-ink shadow-sm ring-1 ring-black/10 transition active:scale-[0.98]">
             <span aria-hidden="true">📥</span>
-            Import backup
+            导入备份
             <input
               ref={fileRef}
               type="file"
@@ -140,18 +140,17 @@ export default function DataBackup() {
 
           {importStatus === "success" ? (
             <p className="text-center text-sm font-semibold text-[#81b29a] animate-pop">
-              Restored! Reloading…
+              已恢复！正在刷新…
             </p>
           ) : null}
           {importStatus === "error" ? (
             <p className="text-center text-sm font-semibold text-[#e07a5f] animate-pop">
-              Invalid backup file. Please try again.
+              无效的备份文件，请重试。
             </p>
           ) : null}
 
           <p className="text-xs text-ink-soft">
-            Backup includes quest progress, points, presets, and settings.
-            Importing will overwrite current data.
+            备份包含任务进度、积分、预设和设置。导入将覆盖当前数据。
           </p>
         </div>
       ) : null}

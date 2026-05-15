@@ -16,28 +16,28 @@ import { updateState, useAppState } from "@/lib/store";
 const questions: { id: number; prompt: string; placeholder: string }[] = [
   {
     id: 1,
-    prompt: "One small thing that went okay today.",
-    placeholder: "Maybe a giggle, a hug, a meal eaten…",
+    prompt: "今天有一件还不错的小事。",
+    placeholder: "一个笑声、一个拥抱、一顿好好吃的饭…",
   },
   {
     id: 2,
-    prompt: "One moment that felt heavy — and how you handled it.",
-    placeholder: "Even if you just took a breath, that counts.",
+    prompt: "一个感觉有点重的瞬间——你是怎么处理的。",
+    placeholder: "哪怕只是深呼吸了一下，也算。",
   },
   {
     id: 3,
-    prompt: "Something the kids did that surprised you.",
-    placeholder: "A new word, a kindness, a question…",
+    prompt: "孩子们做了什么让你意外的事。",
+    placeholder: "一个新词、一个善意、一个问题…",
   },
   {
     id: 4,
-    prompt: "A small kindness for tomorrow-you.",
-    placeholder: "Lay out clothes, prep coffee, set the bowls…",
+    prompt: "给明天的自己一个小小的善意。",
+    placeholder: "准备好衣服、泡好咖啡、摆好碗…",
   },
   {
     id: 5,
-    prompt: "One word for how you feel right now.",
-    placeholder: "Tired, proud, soft, ready…",
+    prompt: "用一个词形容你现在的感受。",
+    placeholder: "累了、骄傲、温柔、准备好了…",
   },
 ];
 
@@ -88,17 +88,17 @@ export default function ParentPage() {
             onClick={handleResetToday}
             className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink-soft shadow-sm ring-1 ring-black/5"
           >
-            Reset today
+            重置今天
           </button>
         </header>
 
         <section className="text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">This week</p>
+          <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">本周概况</p>
           <h1 className="mt-2 text-3xl font-bold leading-tight md:text-4xl">
-            Family rhythm
+            家庭节奏
           </h1>
           <p className="mt-3 text-base text-ink-soft md:text-lg">
-            A soft snapshot of how the week is going.
+            这周过得怎么样，轻轻看一眼。
           </p>
         </section>
 
@@ -106,7 +106,7 @@ export default function ParentPage() {
           <KidWeekView
             kidId="elio"
             kidName="Elio"
-            kidEmoji="🐼"
+            kidEmoji="🦦"
             accentColor="#e07a5f"
           />
           <KidWeekView
@@ -120,16 +120,16 @@ export default function ParentPage() {
         {/* Task Editor */}
         <section className="mt-10">
           <div className="text-center mb-5">
-            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">Customize</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">自定义</p>
             <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">
-              Edit quests
+              编辑任务
             </h2>
             <p className="mt-2 text-sm text-ink-soft md:text-base">
-              Add, remove, or rearrange daily quests for each kid.
+              为每个孩子添加、删除或调整每日任务。
             </p>
           </div>
           <div className="space-y-4">
-            <QuestEditor kidId="elio" kidName="Elio" kidEmoji="🐼" />
+            <QuestEditor kidId="elio" kidName="Elio" kidEmoji="🦦" />
             <QuestEditor kidId="emilia" kidName="Emilia" kidEmoji="🦫" />
           </div>
         </section>
@@ -137,22 +137,22 @@ export default function ParentPage() {
         {/* Points section */}
         <section className="mt-10">
           <div className="text-center mb-5">
-            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">Reward</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">奖励</p>
             <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">
-              Daily points
+              积分系统
             </h2>
             <p className="mt-2 text-sm text-ink-soft md:text-base">
-              Today&apos;s totals, earning presets &amp; reward shop.
+              累计积分、加分项目和奖品兑换。
             </p>
           </div>
 
           <div className="mb-4 flex justify-center gap-6">
             <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 shadow-sm ring-1 ring-black/5">
-              <span className="text-2xl" aria-hidden="true">🐼</span>
+              <span className="text-2xl" aria-hidden="true">🦦</span>
               <div>
                 <div className="text-xs text-ink-soft">Elio</div>
                 <div className="text-xl font-bold text-[#e07a5f]">
-                  {getBalance("elio")} <span className="text-sm font-medium text-ink-soft">pts</span>
+                  {getBalance("elio")} <span className="text-sm font-medium text-ink-soft">分</span>
                 </div>
               </div>
             </div>
@@ -161,7 +161,7 @@ export default function ParentPage() {
               <div>
                 <div className="text-xs text-ink-soft">Emilia</div>
                 <div className="text-xl font-bold text-[#d68fa5]">
-                  {getBalance("emilia")} <span className="text-sm font-medium text-ink-soft">pts</span>
+                  {getBalance("emilia")} <span className="text-sm font-medium text-ink-soft">分</span>
                 </div>
               </div>
             </div>
@@ -174,15 +174,15 @@ export default function ParentPage() {
         </section>
 
         <section className="mt-12 text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">Parent Reset</p>
+          <p className="text-sm uppercase tracking-[0.2em] text-ink-soft">家长时刻</p>
           <h2 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">
-            Five quiet questions
+            五个安静的问题
           </h2>
           <p className="mt-3 text-base text-ink-soft md:text-lg">
-            Take a slow breath. Answer any. Skip any. This is only for you.
+            慢慢呼吸。随便回答。随便跳过。这只属于你。
           </p>
           <p className="mt-2 text-sm text-ink-soft">
-            {filled} of {questions.length} answered
+            已回答 {filled} / {questions.length}
           </p>
         </section>
 
@@ -214,14 +214,14 @@ export default function ParentPage() {
 
         <div className="mt-8 flex items-center justify-between">
           <span className="text-sm text-ink-soft">
-            {savedNotice ? "Saved." : "Saves automatically as you write."}
+            {savedNotice ? "已保存" : "输入时自动保存"}
           </span>
           <button
             type="button"
             onClick={flashSaved}
             className="rounded-full bg-[#81b29a] px-6 py-3 font-bold text-white shadow-sm transition hover:bg-[#6f9d87]"
           >
-            Save & close
+            保存
           </button>
         </div>
 
@@ -234,7 +234,7 @@ export default function ParentPage() {
         </section>
 
         <p className="mt-10 text-center text-sm text-ink-soft">
-          Thanks for showing up today.
+          今天辛苦了，谢谢你。
         </p>
       </div>
     </div>
@@ -268,9 +268,9 @@ function PinSettings() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xl" aria-hidden="true">🔒</span>
-            <h3 className="text-base font-bold">PIN lock</h3>
+            <h3 className="text-base font-bold">PIN 密码锁</h3>
             {pinSaved ? (
-              <span className="text-xs font-medium text-[#81b29a] animate-pop">Saved!</span>
+              <span className="text-xs font-medium text-[#81b29a] animate-pop">已保存！</span>
             ) : null}
           </div>
           <div className="flex items-center gap-2">
@@ -279,21 +279,21 @@ function PinSettings() {
               onClick={() => setShowPinChange(!showPinChange)}
               className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink-soft ring-1 ring-black/10 hover:bg-bg-soft"
             >
-              {showPinChange ? "Cancel" : "Change PIN"}
+              {showPinChange ? "取消" : "修改 PIN"}
             </button>
             <button
               type="button"
               onClick={handleLock}
               className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink-soft ring-1 ring-black/10 hover:bg-bg-soft"
             >
-              Lock now
+              立即锁定
             </button>
           </div>
         </div>
 
         {showPinChange ? (
           <div className="mt-4 flex items-center gap-3">
-            <label className="text-sm text-ink-soft">New 4-digit PIN:</label>
+            <label className="text-sm text-ink-soft">新的4位 PIN：</label>
             <input
               type="tel"
               inputMode="numeric"
@@ -309,12 +309,12 @@ function PinSettings() {
               disabled={newPin.length !== 4}
               className="rounded-full bg-[#81b29a] px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40"
             >
-              Save
+              保存
             </button>
           </div>
         ) : (
           <p className="mt-2 text-xs text-ink-soft">
-            Current PIN: {getPin()} &middot; Keeps the parent page safe from curious taps.
+            当前 PIN：{getPin()} · 防止小朋友好奇乱点。
           </p>
         )}
       </div>

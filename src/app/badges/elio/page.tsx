@@ -12,7 +12,7 @@ export default function ElioBadgesPage() {
       <BadgeShelf
         kidId="elio"
         kidName="Elio"
-        kidEmoji="🐼"
+        kidEmoji="🦦"
         accentColor="#e07a5f"
       />
     </div>

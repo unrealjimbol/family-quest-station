@@ -8,7 +8,7 @@ import { updateState, useAppState } from "@/lib/store";
 import type { QuietCheckIn } from "@/lib/types";
 
 const moods: { id: NonNullable<QuietCheckIn["mood"]>; label: string; emoji: string; color: string }[] = [
-  { id: "calm", label: "Calm", emoji: "🌿", color: "bg-emerald-50 ring-emerald-300 text-emerald-800" },
+  { id: "calm", label: "Calm", emoji: "🍃", color: "bg-emerald-50 ring-emerald-300 text-emerald-800" },
   { id: "okay", label: "Okay", emoji: "🌤️", color: "bg-amber-50 ring-amber-300 text-amber-800" },
   { id: "tired", label: "Tired", emoji: "🌙", color: "bg-indigo-50 ring-indigo-300 text-indigo-800" },
   { id: "spark", label: "Spark", emoji: "✨", color: "bg-rose-50 ring-rose-300 text-rose-800" },
@@ -138,7 +138,7 @@ export default function CynthiaPage() {
         </header>
 
         <section className="text-center">
-          <div className="text-4xl md:text-5xl" aria-hidden="true">🌿</div>
+          <div className="text-4xl md:text-5xl" aria-hidden="true">🐰</div>
           <h1 className="mt-2 text-2xl font-bold leading-tight md:text-3xl">Hi, Cynthia</h1>
           <p className="mt-2 text-sm text-ink-soft md:text-base">
             Your quiet space. Tap any. Skip any. Just being here counts.

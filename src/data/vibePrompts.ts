@@ -96,7 +96,7 @@ export const vibePrompts: VibePrompt[] = [
     question: "You're riding a…",
     options: [
       { emoji: "🐉", label: "DRAGON — breathe fire!", vibe: "wild" },
-      { emoji: "🐼", label: "Giant panda — so fluffy", vibe: "chill" },
+      { emoji: "🦦", label: "Sea otter — float along", vibe: "chill" },
     ],
   },
   {
@@ -190,35 +190,35 @@ export const kidVoices: Record<KidId, KidVoice> = {
   elio: {
     greetings: [
       "Hey Elio!",
-      "Yo, panda buddy!",
-      "Welcome back, panda!",
-      "Hello again, bamboo hero.",
+      "Yo, otter buddy!",
+      "Welcome back, sea otter!",
+      "Hello again, shell smasher.",
     ],
     responses: {
       zappy: [
-        "WHOOSH — panda power activated! 🐼💨",
-        "I knew it. Panda high-five! 🐾",
-        "Yes! Let's roll through these quests!",
+        "SPLASH — otter power activated! 🦦💦",
+        "I knew it. Otter high-five! 🐾",
+        "Yes! Let's swim through these quests!",
       ],
       chill: [
-        "Steady panda energy. We got this.",
+        "Steady otter energy. Float along today.",
         "Nice and chill. That's a great pace.",
-        "Cool panda. Let's munch through the day. 🎋",
+        "Cool otter. Just floating and vibing. 🌊",
       ],
       sleepy: [
-        "Same. Slow paws today, panda friend.",
-        "Sleepy panda is a wise panda. We'll go gentle. 🐾",
-        "Yawn. Bamboo snack first, quests second.",
+        "Same. Slow flippers today, otter friend.",
+        "Sleepy otter is a wise otter. We'll go gentle. 🐾",
+        "Yawn. Snack first, quests second.",
       ],
       cloudy: [
-        "Real. Even pandas have grumpy days.",
+        "Real. Even otters have grumpy days.",
         "Fair. Let's start with just ONE small thing.",
-        "Cloudy panda feelings. We'll go slow today.",
+        "Cloudy otter feelings. We'll go slow today.",
       ],
       wild: [
-        "WHOAAA — save some tumbles for the quests! 🌪️",
+        "WHOAAA — save some splashing for the quests! 🌊",
         "Look at you GO. Channel that into something good!",
-        "Wild panda detected! Don't roll into the furniture! 😆",
+        "Wild otter detected! Don't splash the furniture! 😆",
       ],
     },
   },
