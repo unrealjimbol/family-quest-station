@@ -16,7 +16,7 @@ export default function KidAvatar({ emoji, className = "text-7xl", size }: Props
     const px = size ?? sizeFromClass(className);
     return (
       <img
-        src="/capybara.svg"
+        src="/capybara.png"
         alt="Capybara"
         className={className}
         style={{ width: px, height: px, display: "inline-block" }}
