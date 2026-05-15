@@ -14,7 +14,7 @@ export default function EmiliaPage() {
         <KidView
           kidId="emilia"
           kidName="Emilia"
-          kidEmoji="🦄"
+          kidEmoji="🦫"
           quests={emiliaQuests}
           accent={{
             tile: "bg-[#f7d6e0] text-[#d68fa5]",

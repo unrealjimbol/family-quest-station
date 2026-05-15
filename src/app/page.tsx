@@ -33,7 +33,7 @@ const cards: Card[] = [
     href: "/emilia",
     name: "Emilia",
     role: "Daily Quests",
-    emoji: "🦄",
+    emoji: "🦫",
     bg: "bg-[#f7d6e0]",
     ring: "ring-[#d68fa5]/30",
     kidId: "emilia",

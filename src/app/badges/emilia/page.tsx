@@ -12,7 +12,7 @@ export default function EmiliaBadgesPage() {
       <BadgeShelf
         kidId="emilia"
         kidName="Emilia"
-        kidEmoji="🦄"
+        kidEmoji="🦫"
         accentColor="#d68fa5"
       />
     </div>

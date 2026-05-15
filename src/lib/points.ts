@@ -27,6 +27,7 @@ export type PointPreset = {
 type PointsData = Record<string, DailyPoints>; // key = `${kidId}_${date}`
 
 const DEFAULT_PRESETS: PointPreset[] = [
+  { id: "atewell", label: "Ate well", emoji: "🍚", points: 1 },
   { id: "seatbelt", label: "Buckled seatbelt", emoji: "🚗", points: 1 },
   { id: "share", label: "Shared with sibling", emoji: "🤝", points: 1 },
   { id: "thankyou", label: "Said thank you", emoji: "🙏", points: 1 },
