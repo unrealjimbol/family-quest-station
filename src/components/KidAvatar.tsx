@@ -1,7 +1,13 @@
 /**
- * Renders a kid's avatar — either a custom image (Emilia's capybara)
- * or an emoji span for everyone else.
+ * Renders a kid's avatar — custom images for Elio (sea monster)
+ * and Emilia (capybara), emoji spans for everyone else.
  */
+
+/** Map emoji → custom image path */
+const CUSTOM_AVATARS: Record<string, { src: string; alt: string }> = {
+  "🦦": { src: "/sea-monster.png", alt: "Sea Eater Monster" },
+  "🦫": { src: "/capybara.png", alt: "Capybara" },
+};
 
 type Props = {
   emoji: string;
@@ -11,15 +17,20 @@ type Props = {
 };
 
 export default function KidAvatar({ emoji, className = "text-7xl", size }: Props) {
-  // Emilia's capybara uses a custom SVG instead of an emoji
-  if (emoji === "🦫") {
+  const custom = CUSTOM_AVATARS[emoji];
+  if (custom) {
     const px = size ?? sizeFromClass(className);
     return (
       <img
-        src="/capybara.png"
-        alt="Capybara"
-        className={className}
-        style={{ width: px, height: px, display: "inline-block" }}
+        src={custom.src}
+        alt={custom.alt}
+        style={{
+          width: px,
+          height: px,
+          display: "inline-block",
+          objectFit: "contain",
+          borderRadius: "20%",
+        }}
         aria-hidden="true"
       />
     );
