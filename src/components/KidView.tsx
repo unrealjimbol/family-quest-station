@@ -7,7 +7,7 @@ import QuestTransition from "@/components/QuestTransition";
 import SleepCeremony from "@/components/SleepCeremony";
 import VibeCheck from "@/components/VibeCheck";
 import { getQuests } from "@/lib/customQuests";
-import { getTodayTotal } from "@/lib/points";
+import { getBalance } from "@/lib/points";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
 import type { KidId, Quest } from "@/lib/types";
@@ -150,7 +150,7 @@ export default function KidView({
   );
 }
 
-/** Floating action button showing today's point total */
+/** Floating action button showing cumulative point balance */
 function PointsFab({
   kidId,
   progressColor,
@@ -163,7 +163,7 @@ function PointsFab({
   onOpen: () => void;
 }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const total = useMemo(() => getTodayTotal(kidId), [kidId, version]);
+  const total = useMemo(() => getBalance(kidId), [kidId, version]);
   return (
     <button
       type="button"

@@ -1,4 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo } from "react";
+import { getQuests } from "@/lib/customQuests";
+import { getBalance } from "@/lib/points";
+import { useAppState } from "@/lib/store";
+import type { KidId } from "@/lib/types";
 
 type Card = {
   href: string;
@@ -7,6 +14,8 @@ type Card = {
   emoji: string;
   bg: string;
   ring: string;
+  kidId?: KidId;
+  accentColor?: string;
 };
 
 const cards: Card[] = [
@@ -17,6 +26,8 @@ const cards: Card[] = [
     emoji: "🐼",
     bg: "bg-[#fde4cf]",
     ring: "ring-[#e07a5f]/30",
+    kidId: "elio",
+    accentColor: "#e07a5f",
   },
   {
     href: "/emilia",
@@ -25,6 +36,8 @@ const cards: Card[] = [
     emoji: "🦄",
     bg: "bg-[#f7d6e0]",
     ring: "ring-[#d68fa5]/30",
+    kidId: "emilia",
+    accentColor: "#d68fa5",
   },
   {
     href: "/cynthia",
@@ -45,6 +58,8 @@ const cards: Card[] = [
 ];
 
 export default function Home() {
+  const state = useAppState();
+
   return (
     <div className="min-h-screen w-full px-6 py-10 md:px-10 md:py-14">
       <div className="mx-auto w-full max-w-6xl">
@@ -70,6 +85,16 @@ export default function Home() {
               </div>
               <div className="mt-4 text-2xl font-bold md:mt-6 md:text-3xl">{card.name}</div>
               <div className="mt-1 text-sm text-ink-soft md:text-base">{card.role}</div>
+
+              {/* Status preview for kids */}
+              {card.kidId ? (
+                <KidStatusPreview
+                  kidId={card.kidId}
+                  completedIds={state[card.kidId].today.completedQuestIds}
+                  vibeEmoji={state[card.kidId].today.vibe?.emoji}
+                  accentColor={card.accentColor!}
+                />
+              ) : null}
             </Link>
           ))}
         </div>
@@ -78,6 +103,59 @@ export default function Home() {
           Saved on this device only · No account needed
         </p>
       </div>
+    </div>
+  );
+}
+
+function KidStatusPreview({
+  kidId,
+  completedIds,
+  vibeEmoji,
+  accentColor,
+}: {
+  kidId: KidId;
+  completedIds: string[];
+  vibeEmoji?: string;
+  accentColor: string;
+}) {
+  const quests = useMemo(() => getQuests(kidId), [kidId]);
+  const balance = useMemo(() => getBalance(kidId), [kidId]);
+  const done = completedIds.filter((id) => quests.some((q) => q.id === id)).length;
+  const total = quests.length;
+
+  // Nothing to show yet
+  if (done === 0 && balance === 0 && !vibeEmoji) return null;
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 md:mt-4">
+      {/* Vibe emoji */}
+      {vibeEmoji ? (
+        <span
+          className="flex h-6 items-center rounded-full bg-white/70 px-2 text-xs font-semibold ring-1 ring-black/5 md:h-7 md:px-2.5 md:text-sm"
+        >
+          {vibeEmoji}
+        </span>
+      ) : null}
+
+      {/* Quest progress */}
+      {done > 0 ? (
+        <span
+          className="flex h-6 items-center rounded-full bg-white/70 px-2 text-xs font-bold ring-1 ring-black/5 md:h-7 md:px-2.5 md:text-sm"
+          style={{ color: accentColor }}
+        >
+          ✓ {done}/{total}
+        </span>
+      ) : null}
+
+      {/* Point balance */}
+      {balance > 0 ? (
+        <span
+          className="flex h-6 items-center gap-0.5 rounded-full bg-white/70 px-2 text-xs font-bold ring-1 ring-black/5 md:h-7 md:px-2.5 md:text-sm"
+          style={{ color: accentColor }}
+        >
+          ⭐ {balance}
+        </span>
+      ) : null}
     </div>
   );
 }

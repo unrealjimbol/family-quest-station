@@ -7,7 +7,7 @@ import PointPresetEditor from "@/components/PointPresetEditor";
 import RewardPresetEditor from "@/components/RewardPresetEditor";
 import QuestEditor from "@/components/QuestEditor";
 import KidWeekView from "@/components/WeekView";
-import { getTodayTotal } from "@/lib/points";
+import { getBalance } from "@/lib/points";
 import { getPin, lockSession, setPin } from "@/lib/pin";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
@@ -151,7 +151,7 @@ export default function ParentPage() {
               <div>
                 <div className="text-xs text-ink-soft">Elio</div>
                 <div className="text-xl font-bold text-[#e07a5f]">
-                  {getTodayTotal("elio")} <span className="text-sm font-medium text-ink-soft">pts</span>
+                  {getBalance("elio")} <span className="text-sm font-medium text-ink-soft">pts</span>
                 </div>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function ParentPage() {
               <div>
                 <div className="text-xs text-ink-soft">Emilia</div>
                 <div className="text-xl font-bold text-[#d68fa5]">
-                  {getTodayTotal("emilia")} <span className="text-sm font-medium text-ink-soft">pts</span>
+                  {getBalance("emilia")} <span className="text-sm font-medium text-ink-soft">pts</span>
                 </div>
               </div>
             </div>

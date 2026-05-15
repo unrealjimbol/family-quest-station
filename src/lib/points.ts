@@ -98,6 +98,18 @@ export function getTodayTotal(kidId: KidId): number {
   return day.entries.reduce((sum, e) => sum + e.points, 0);
 }
 
+/** Cumulative balance across ALL days (earned minus spent) */
+export function getBalance(kidId: KidId): number {
+  const all = loadAll();
+  let balance = 0;
+  for (const [key, day] of Object.entries(all)) {
+    if (key.startsWith(`${kidId}_`)) {
+      balance += day.entries.reduce((s, e) => s + e.points, 0);
+    }
+  }
+  return balance;
+}
+
 /** Get last 7 days of point totals for a kid */
 export function getWeekTotals(kidId: KidId): { date: string; total: number }[] {
   const all = loadAll();

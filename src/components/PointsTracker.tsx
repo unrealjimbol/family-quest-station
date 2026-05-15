@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   addPoint,
+  getBalance,
   getPresets,
   getRewards,
   getToday,
-  getTodayTotal,
   removePoint,
   spendPoints,
   type DailyPoints,
@@ -34,17 +34,15 @@ export default function PointsTracker({
   onClose,
 }: Props) {
   const [day, setDay] = useState<DailyPoints>(() => getToday(kidId));
-  const [total, setTotal] = useState(() => getTodayTotal(kidId));
+  const [balance, setBalance] = useState(() => getBalance(kidId));
   const [presets] = useState<PointPreset[]>(() => getPresets());
   const [rewards] = useState<RewardPreset[]>(() => getRewards());
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [tab, setTab] = useState<Tab>("earn");
 
-  const refresh = useCallback(() => {
-    const d = getToday(kidId);
-    setDay(d);
-    setTotal(d.entries.reduce((s, e) => s + e.points, 0));
+  const refreshBalance = useCallback(() => {
+    setBalance(getBalance(kidId));
   }, [kidId]);
 
   // Close on Escape
@@ -59,17 +57,17 @@ export default function PointsTracker({
   function handleAdd(preset: PointPreset) {
     const updated = addPoint(kidId, `${preset.emoji} ${preset.label}`, preset.points);
     setDay(updated);
-    setTotal(updated.entries.reduce((s, e) => s + e.points, 0));
+    refreshBalance();
     playCoin();
     setJustAdded(preset.id);
     setTimeout(() => setJustAdded((c) => (c === preset.id ? null : c)), 500);
   }
 
   function handleSpend(reward: RewardPreset) {
-    if (total < reward.cost) return; // not enough points
+    if (balance < reward.cost) return;
     const updated = spendPoints(kidId, `${reward.emoji} ${reward.label}`, reward.cost);
     setDay(updated);
-    setTotal(updated.entries.reduce((s, e) => s + e.points, 0));
+    refreshBalance();
     playSpend();
     setJustAdded(reward.id);
     setTimeout(() => setJustAdded((c) => (c === reward.id ? null : c)), 500);
@@ -78,16 +76,15 @@ export default function PointsTracker({
   function handleRemove(entryId: string) {
     const updated = removePoint(kidId, entryId);
     setDay(updated);
-    setTotal(updated.entries.reduce((s, e) => s + e.points, 0));
+    refreshBalance();
   }
 
   const sortedEntries = [...day.entries].sort((a, b) => b.time - a.time);
-  const earned = day.entries.filter((e) => e.points > 0).reduce((s, e) => s + e.points, 0);
-  const spent = day.entries.filter((e) => e.points < 0).reduce((s, e) => s + Math.abs(e.points), 0);
+  const todayEarned = day.entries.filter((e) => e.points > 0).reduce((s, e) => s + e.points, 0);
+  const todaySpent = day.entries.filter((e) => e.points < 0).reduce((s, e) => s + Math.abs(e.points), 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
-      {/* Backdrop */}
       <button
         type="button"
         className="absolute inset-0 bg-black/30 backdrop-blur-sm"
@@ -95,14 +92,11 @@ export default function PointsTracker({
         aria-label="Close points tracker"
       />
 
-      {/* Panel */}
       <div className="animate-slide-up relative w-full max-w-md rounded-t-3xl bg-[#fdf6ec] p-5 shadow-2xl ring-1 ring-black/10 md:rounded-3xl md:p-7">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl" aria-hidden="true">
-              {kidEmoji}
-            </span>
+            <span className="text-2xl" aria-hidden="true">{kidEmoji}</span>
             <div>
               <h2 className="text-lg font-bold">{kidName}&apos;s Points</h2>
               <p className="text-xs text-ink-soft">
@@ -120,25 +114,33 @@ export default function PointsTracker({
           </button>
         </div>
 
-        {/* Score display */}
+        {/* Balance display */}
         <div
-          className="mb-4 flex items-center justify-center gap-4 rounded-2xl p-4"
+          className="mb-4 rounded-2xl p-4"
           style={{ backgroundColor: `${accentColor}12` }}
         >
-          <span className="text-3xl" aria-hidden="true">⭐</span>
-          <div className="text-center">
-            <div
-              className="text-4xl font-bold tabular-nums"
-              style={{ color: accentColor }}
-            >
-              {total}
+          <div className="flex items-center justify-center gap-4">
+            <span className="text-3xl" aria-hidden="true">⭐</span>
+            <div className="text-center">
+              <div className="text-4xl font-bold tabular-nums" style={{ color: accentColor }}>
+                {balance}
+              </div>
+              <div className="text-xs font-medium text-ink-soft">total balance</div>
             </div>
-            <div className="text-xs font-medium text-ink-soft">points today</div>
           </div>
-          {(earned > 0 || spent > 0) ? (
-            <div className="text-xs text-ink-soft leading-relaxed">
-              <div className="text-[#81b29a] font-semibold">+{earned} earned</div>
-              {spent > 0 ? <div className="text-[#e07a5f] font-semibold">-{spent} spent</div> : null}
+          {/* Today's activity summary */}
+          {(todayEarned > 0 || todaySpent > 0) ? (
+            <div className="mt-2 flex items-center justify-center gap-3 text-xs">
+              {todayEarned > 0 ? (
+                <span className="rounded-full bg-white/80 px-2 py-0.5 font-semibold text-[#81b29a]">
+                  +{todayEarned} today
+                </span>
+              ) : null}
+              {todaySpent > 0 ? (
+                <span className="rounded-full bg-white/80 px-2 py-0.5 font-semibold text-[#e07a5f]">
+                  -{todaySpent} spent
+                </span>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -149,9 +151,7 @@ export default function PointsTracker({
             type="button"
             onClick={() => setTab("earn")}
             className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
-              tab === "earn"
-                ? "bg-[#81b29a] text-white shadow-sm"
-                : "text-ink-soft hover:text-ink"
+              tab === "earn" ? "bg-[#81b29a] text-white shadow-sm" : "text-ink-soft hover:text-ink"
             }`}
           >
             ⭐ Earn
@@ -160,9 +160,7 @@ export default function PointsTracker({
             type="button"
             onClick={() => setTab("spend")}
             className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
-              tab === "spend"
-                ? "bg-[#e07a5f] text-white shadow-sm"
-                : "text-ink-soft hover:text-ink"
+              tab === "spend" ? "bg-[#e07a5f] text-white shadow-sm" : "text-ink-soft hover:text-ink"
             }`}
           >
             🎁 Spend
@@ -195,7 +193,7 @@ export default function PointsTracker({
         {tab === "spend" ? (
           <div className="mb-4 grid grid-cols-2 gap-2">
             {rewards.map((r) => {
-              const canAfford = total >= r.cost;
+              const canAfford = balance >= r.cost;
               return (
                 <button
                   key={r.id}
@@ -245,18 +243,11 @@ export default function PointsTracker({
                     className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm ring-1 ring-black/5"
                   >
                     <span className="flex-1 truncate">{entry.label}</span>
-                    <span
-                      className={`shrink-0 text-xs font-bold ${
-                        entry.points >= 0 ? "text-[#81b29a]" : "text-[#e07a5f]"
-                      }`}
-                    >
+                    <span className={`shrink-0 text-xs font-bold ${entry.points >= 0 ? "text-[#81b29a]" : "text-[#e07a5f]"}`}>
                       {entry.points >= 0 ? "+" : ""}{entry.points}
                     </span>
                     <span className="shrink-0 text-xs text-ink-soft">
-                      {new Date(entry.time).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {new Date(entry.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                     <button
                       type="button"
