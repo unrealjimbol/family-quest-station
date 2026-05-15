@@ -81,7 +81,7 @@ export default function Home() {
                 className="animate-bob"
                 style={{ animationDelay: `${idx * 0.4}s` }}
               >
-                <KidAvatar emoji={card.emoji} className="text-7xl md:text-8xl" />
+                <KidAvatar emoji={card.emoji} size={140} />
               </div>
               <div className="mt-4 text-2xl font-bold md:mt-6 md:text-3xl">{card.name}</div>
               <div className="mt-1 text-sm text-ink-soft md:text-base">{card.role}</div>
