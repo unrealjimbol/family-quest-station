@@ -61,6 +61,8 @@ export type DaySnapshot = {
 
 export type MemoryMatchDifficulty = "easy" | "medium" | "hard";
 
+export type MathDashDifficulty = "easy" | "medium" | "hard";
+
 export type GameStats = {
   memoryMatch?: Partial<
     Record<MemoryMatchDifficulty, { time: number; moves: number }>
@@ -71,6 +73,16 @@ export type GameStats = {
   };
   echoBeat?: {
     bestStreak: number;
+  };
+  patternQuest?: {
+    bestScore: number;
+  };
+  mathDash?: {
+    bestScore: Partial<Record<MathDashDifficulty, number>>;
+  };
+  slidePuzzle?: {
+    best3x3: { moves: number; time: number } | null;
+    best4x4: { moves: number; time: number } | null;
   };
 };
 

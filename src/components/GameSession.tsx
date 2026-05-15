@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import BreathBuddy from "@/components/BreathBuddy";
-import ColorSort from "@/components/ColorSort";
-import EchoBeat from "@/components/EchoBeat";
-import MemoryMatch from "@/components/MemoryMatch";
+import PatternQuest from "@/components/PatternQuest";
+import SlidePuzzle from "@/components/SlidePuzzle";
+import MathDash from "@/components/MathDash";
 import {
   getCooldownRemaining,
   getPlayTimeRemaining,
@@ -18,7 +18,7 @@ import type { KidId } from "@/lib/types";
 
 const UNLOCK_COST = 10;
 
-type GameId = "memory" | "echo" | "color" | "breath";
+type GameId = "math" | "pattern" | "slide" | "breath";
 
 const GAMES: Array<{
   id: GameId;
@@ -28,24 +28,24 @@ const GAMES: Array<{
   bg: string;
 }> = [
   {
-    id: "memory",
-    emoji: "🃏",
-    name: "Memory Match",
-    desc: "Flip cards, find pairs · 3 levels",
+    id: "math",
+    emoji: "⚡",
+    name: "Math Dash",
+    desc: "Rapid-fire math · 3 levels",
     bg: "bg-[#fde4cf]",
   },
   {
-    id: "echo",
-    emoji: "🎯",
-    name: "Echo Beat",
-    desc: "Watch & repeat · how far can you go?",
+    id: "pattern",
+    emoji: "🔮",
+    name: "Pattern Quest",
+    desc: "Find the pattern · 10 rounds",
     bg: "bg-[#e6e0f0]",
   },
   {
-    id: "color",
-    emoji: "🧪",
-    name: "Color Sort",
-    desc: "Sort tubes by color · 5 levels",
+    id: "slide",
+    emoji: "🧩",
+    name: "Slide Puzzle",
+    desc: "Slide tiles into order · 2 sizes",
     bg: "bg-[#e1ecd4]",
   },
   {
@@ -185,14 +185,14 @@ export default function GameSession({
     return <CooldownScreen remainingMs={cooldownMs} onClose={close} />;
   }
 
-  if (picked === "memory") {
-    return <MemoryMatch kidId={kidId} onClose={handleBackToPicker} accentColor={accentColor} />;
+  if (picked === "math") {
+    return <MathDash kidId={kidId} onClose={handleBackToPicker} accentColor={accentColor} />;
   }
-  if (picked === "echo") {
-    return <EchoBeat kidId={kidId} onClose={handleBackToPicker} accentColor="#6c5ce7" />;
+  if (picked === "pattern") {
+    return <PatternQuest kidId={kidId} onClose={handleBackToPicker} accentColor="#6c5ce7" />;
   }
-  if (picked === "color") {
-    return <ColorSort kidId={kidId} onClose={handleBackToPicker} accentColor="#7fb46a" />;
+  if (picked === "slide") {
+    return <SlidePuzzle kidId={kidId} onClose={handleBackToPicker} accentColor="#7fb46a" />;
   }
   if (picked === "breath") {
     return <BreathBuddy onClose={handleBackToPicker} accentColor="#b48ead" />;
