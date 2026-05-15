@@ -29,7 +29,6 @@ export default function KidAvatar({ emoji, className = "text-7xl", size }: Props
           height: px,
           display: "inline-block",
           objectFit: "contain",
-          borderRadius: "20%",
         }}
         aria-hidden="true"
       />
