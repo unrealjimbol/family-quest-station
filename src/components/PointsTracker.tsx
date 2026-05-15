@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import KidAvatar from "@/components/KidAvatar";
 import {
   addPoint,
   getBalance,
@@ -96,7 +97,7 @@ export default function PointsTracker({
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl" aria-hidden="true">{kidEmoji}</span>
+            <KidAvatar emoji={kidEmoji} className="text-2xl" />
             <div>
               <h2 className="text-lg font-bold">{kidName}&apos;s Points</h2>
               <p className="text-xs text-ink-soft">

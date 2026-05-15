@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import KidAvatar from "@/components/KidAvatar";
 import { getQuests } from "@/lib/customQuests";
 import { getBalance } from "@/lib/points";
 import { useAppState } from "@/lib/store";
@@ -77,11 +78,10 @@ export default function Home() {
               className={`group relative flex aspect-square flex-col items-center justify-center rounded-3xl ${card.bg} p-6 shadow-sm ring-1 ${card.ring} transition-transform duration-200 hover:-translate-y-1 active:scale-[0.98] md:rounded-[2rem] md:p-10`}
             >
               <div
-                className="text-7xl md:text-8xl animate-bob"
+                className="animate-bob"
                 style={{ animationDelay: `${idx * 0.4}s` }}
-                aria-hidden="true"
               >
-                {card.emoji}
+                <KidAvatar emoji={card.emoji} className="text-7xl md:text-8xl" />
               </div>
               <div className="mt-4 text-2xl font-bold md:mt-6 md:text-3xl">{card.name}</div>
               <div className="mt-1 text-sm text-ink-soft md:text-base">{card.role}</div>

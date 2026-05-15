@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import DataBackup from "@/components/DataBackup";
+import KidAvatar from "@/components/KidAvatar";
 import PinGate from "@/components/PinGate";
 import PointPresetEditor from "@/components/PointPresetEditor";
 import RewardPresetEditor from "@/components/RewardPresetEditor";
@@ -148,7 +149,7 @@ export default function ParentPage() {
 
           <div className="mb-4 flex justify-center gap-6">
             <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 shadow-sm ring-1 ring-black/5">
-              <span className="text-2xl" aria-hidden="true">🦦</span>
+              <KidAvatar emoji="🦦" className="text-2xl" />
               <div>
                 <div className="text-xs text-ink-soft">Elio</div>
                 <div className="text-xl font-bold text-[#e07a5f]">
@@ -157,7 +158,7 @@ export default function ParentPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 shadow-sm ring-1 ring-black/5">
-              <span className="text-2xl" aria-hidden="true">🦫</span>
+              <KidAvatar emoji="🦫" className="text-2xl" />
               <div>
                 <div className="text-xs text-ink-soft">Emilia</div>
                 <div className="text-xl font-bold text-[#d68fa5]">

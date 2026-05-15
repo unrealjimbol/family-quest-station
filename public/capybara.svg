@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Body - round and chubby -->
+  <ellipse cx="60" cy="68" rx="38" ry="34" fill="#C4956A"/>
+  <!-- Head - big round capybara head -->
+  <circle cx="60" cy="44" r="30" fill="#D4A574"/>
+  <!-- Ears - small round ears -->
+  <circle cx="40" cy="22" r="7" fill="#D4A574"/>
+  <circle cx="80" cy="22" r="7" fill="#D4A574"/>
+  <circle cx="40" cy="22" r="4.5" fill="#E8C4A0"/>
+  <circle cx="80" cy="22" r="4.5" fill="#E8C4A0"/>
+  <!-- Cheeks - rosy blush -->
+  <circle cx="40" cy="50" r="8" fill="#F5B5B5" opacity="0.5"/>
+  <circle cx="80" cy="50" r="8" fill="#F5B5B5" opacity="0.5"/>
+  <!-- Eyes - big cute dots -->
+  <circle cx="48" cy="40" r="5" fill="#3A2E22"/>
+  <circle cx="72" cy="40" r="5" fill="#3A2E22"/>
+  <!-- Eye sparkle -->
+  <circle cx="50" cy="38" r="2" fill="white"/>
+  <circle cx="74" cy="38" r="2" fill="white"/>
+  <!-- Nose - capybara's cute rectangular nose -->
+  <rect x="52" y="50" width="16" height="12" rx="6" fill="#8B6B4A"/>
+  <!-- Nostrils -->
+  <circle cx="57" cy="56" r="2" fill="#6B4F35"/>
+  <circle cx="63" cy="56" r="2" fill="#6B4F35"/>
+  <!-- Mouth - little smile -->
+  <path d="M55 62 Q60 66 65 62" stroke="#6B4F35" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Orange on head (capybara signature!) -->
+  <circle cx="60" cy="16" r="9" fill="#FF8C42"/>
+  <!-- Orange leaf -->
+  <path d="M60 7 Q64 4 62 9" fill="#5DAE5D" stroke="#4A8B4A" stroke-width="0.5"/>
+</svg>

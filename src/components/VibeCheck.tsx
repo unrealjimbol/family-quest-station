@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useMemo, useRef, useState } from "react";
+import KidAvatar from "@/components/KidAvatar";
 import {
   pickGreeting,
   pickPromptForToday,
@@ -138,11 +139,8 @@ export default function VibeCheck({
         {phase === "question" ? (
           <div className="flex flex-col items-center">
             <div className="text-center">
-              <div
-                className="mx-auto text-6xl animate-bob md:text-8xl"
-                aria-hidden="true"
-              >
-                {kidEmoji}
+              <div className="mx-auto animate-bob">
+                <KidAvatar emoji={kidEmoji} className="text-6xl md:text-8xl" />
               </div>
               <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink-soft md:mt-4 md:text-sm">
                 This or that?
@@ -256,7 +254,7 @@ export default function VibeCheck({
               {picked.emoji}
             </div>
             <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 ring-1 ring-black/5 md:px-5 md:py-2.5">
-              <span className="text-2xl md:text-3xl" aria-hidden="true">{kidEmoji}</span>
+              <KidAvatar emoji={kidEmoji} className="text-2xl md:text-3xl" />
               <span className="text-sm font-semibold md:text-base">{picked.label}</span>
             </div>
 

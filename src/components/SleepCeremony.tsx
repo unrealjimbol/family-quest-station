@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import KidAvatar from "@/components/KidAvatar";
 import { playSoftTone } from "@/lib/sounds";
 import { useAppState } from "@/lib/store";
 import type { KidId } from "@/lib/types";
@@ -102,7 +103,7 @@ export default function SleepCeremony({ kidId, kidName, kidEmoji, onClose }: Pro
         <Stars />
 
         <div className="animate-pop text-center px-6">
-          <div className="text-7xl md:text-8xl mb-4">{kidEmoji}</div>
+          <div className="mb-4"><KidAvatar emoji={kidEmoji} className="text-7xl md:text-8xl" /></div>
           <h2 className="text-3xl font-bold text-white md:text-4xl">
             Good night, {kidName}
           </h2>

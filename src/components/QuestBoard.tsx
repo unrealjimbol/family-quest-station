@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import Confetti from "@/components/Confetti";
+import KidAvatar from "@/components/KidAvatar";
 import { groupMeta } from "@/data/quests";
 import type { KidId, Quest, QuestGroup } from "@/lib/types";
 import { todayStr } from "@/lib/storage";
@@ -190,9 +191,7 @@ export default function QuestBoard({
             <span className="ml-2 hidden md:inline">Home</span>
           </Link>
           <div className="flex min-w-0 items-center gap-2 md:gap-3">
-            <div className="text-3xl md:text-5xl" aria-hidden="true">
-              {kidEmoji}
-            </div>
+            <KidAvatar emoji={kidEmoji} className="text-3xl md:text-5xl" />
             <div className="min-w-0">
               <h1 className="truncate text-xl font-bold leading-tight md:text-3xl">
                 Hi, {kidName}!

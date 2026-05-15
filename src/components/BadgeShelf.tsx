@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import GameSession from "@/components/GameSession";
+import KidAvatar from "@/components/KidAvatar";
 import { scienceQuests } from "@/data/scienceQuests";
 import { useAppState } from "@/lib/store";
 import type { KidId, ScienceQuest } from "@/lib/types";
@@ -72,8 +73,8 @@ export default function BadgeShelf({ kidId, kidName, kidEmoji, accentColor }: Pr
         </header>
 
         <section className="text-center">
-          <div className="mx-auto text-6xl md:text-7xl animate-bob" aria-hidden="true">
-            {kidEmoji}
+          <div className="mx-auto animate-bob">
+            <KidAvatar emoji={kidEmoji} className="text-6xl md:text-7xl" />
           </div>
           <p className="mt-4 text-sm uppercase tracking-[0.2em] text-ink-soft">
             {kidName}&apos;s collection
