@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Confetti from "@/components/Confetti";
 import { updateState, useAppState } from "@/lib/store";
 import type { KidId, MathDashDifficulty } from "@/lib/types";
@@ -103,6 +103,7 @@ export default function MathDash({
 }: Props) {
   const state = useAppState();
   const bestScores = state[kidId].gameStats?.mathDash?.bestScore ?? {};
+  const bestTimes = state[kidId].gameStats?.mathDash?.bestTime ?? {};
 
   const [phase, setPhase] = useState<Phase>("intro");
   const [difficulty, setDifficulty] = useState<MathDashDifficulty>("easy");
@@ -110,6 +111,13 @@ export default function MathDash({
   const [correctCount, setCorrectCount] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isNewBest, setIsNewBest] = useState(false);
+  const [isNewBestTime, setIsNewBestTime] = useState(false);
+
+  // Stopwatch timer
+  const [startTime, setStartTime] = useState<number>(0);
+  const [elapsed, setElapsed] = useState<number>(0);
+  const [finalTime, setFinalTime] = useState<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Current question state
   const [question, setQuestion] = useState<ReturnType<typeof generateQuestion> | null>(null);
@@ -127,12 +135,29 @@ export default function MathDash({
     setLocked(false);
   }, []);
 
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   function startGame(diff: MathDashDifficulty) {
     setDifficulty(diff);
     setQuestionIndex(0);
     setCorrectCount(0);
     setIsNewBest(false);
+    setIsNewBestTime(false);
     setShowConfetti(false);
+    // Start stopwatch
+    const now = Date.now();
+    setStartTime(now);
+    setElapsed(0);
+    setFinalTime(0);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setElapsed(Date.now() - now);
+    }, 100);
     setPhase("playing");
     loadQuestion(diff);
   }
@@ -165,9 +190,23 @@ export default function MathDash({
   }
 
   function finishGame(score: number) {
+    // Stop stopwatch
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    const endTime = Date.now() - startTime;
+    setFinalTime(endTime);
+    setElapsed(endTime);
+
     const prevBest = bestScores[difficulty] ?? 0;
-    if (score > prevBest) {
-      setIsNewBest(true);
+    const prevBestTime = bestTimes[difficulty];
+    const isNewScore = score > prevBest;
+    const isNewTime = score === TOTAL_QUESTIONS && (!prevBestTime || endTime < prevBestTime);
+
+    if (isNewScore || isNewTime) {
+      if (isNewScore) setIsNewBest(true);
+      if (isNewTime) setIsNewBestTime(true);
       updateState((prev) => ({
         ...prev,
         [kidId]: {
@@ -177,7 +216,11 @@ export default function MathDash({
             mathDash: {
               bestScore: {
                 ...prev[kidId].gameStats?.mathDash?.bestScore,
-                [difficulty]: score,
+                ...(isNewScore ? { [difficulty]: score } : {}),
+              },
+              bestTime: {
+                ...prev[kidId].gameStats?.mathDash?.bestTime,
+                ...(isNewTime ? { [difficulty]: endTime } : {}),
               },
             },
           },
@@ -200,6 +243,15 @@ export default function MathDash({
     if (finalScore > 4) return "\u{1F4AA}"; // flexed biceps
     return "\u{1F3AF}"; // bullseye
   }, [finalScore]);
+
+  function formatTime(ms: number): string {
+    const totalSecs = Math.floor(ms / 1000);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const tenths = Math.floor((ms % 1000) / 100);
+    if (mins > 0) return `${mins}:${String(secs).padStart(2, "0")}.${tenths}`;
+    return `${secs}.${tenths}s`;
+  }
 
   const difficultyLabels: Record<MathDashDifficulty, { label: string; desc: string; emoji: string }> = {
     easy: { label: "Easy", desc: "Addition, 1–10", emoji: "\u{1F31F}" },
@@ -230,11 +282,14 @@ export default function MathDash({
         </button>
         {phase === "playing" && question ? (
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="rounded-full bg-white/15 px-4 py-2 text-base font-bold text-white backdrop-blur shadow-sm ring-1 ring-white/20 md:text-lg">
+            <div className="rounded-full bg-white/15 px-3 py-2 text-sm font-bold tabular-nums text-white/90 backdrop-blur shadow-sm ring-1 ring-white/20 md:px-4 md:text-base">
+              {formatTime(elapsed)}
+            </div>
+            <div className="rounded-full bg-white/15 px-3 py-2 text-sm font-bold text-white backdrop-blur shadow-sm ring-1 ring-white/20 md:px-4 md:text-base">
               {questionIndex + 1}/{TOTAL_QUESTIONS}
             </div>
             <div
-              className="rounded-full px-4 py-2 text-base font-bold text-white shadow-sm md:text-lg"
+              className="rounded-full px-3 py-2 text-sm font-bold text-white shadow-sm md:px-4 md:text-base"
               style={{ backgroundColor: accentColor }}
             >
               ✓ {correctCount}
@@ -268,6 +323,7 @@ export default function MathDash({
                     }}
                   >
                     {difficultyLabels[d].emoji} {difficultyLabels[d].label}: {bestScores[d]}/10
+                    {bestTimes[d] ? ` · ${formatTime(bestTimes[d]!)}` : ""}
                   </span>
                 ) : null,
               )}
@@ -372,16 +428,31 @@ export default function MathDash({
           <h2 className="mt-4 text-4xl font-bold md:text-5xl">
             {finalScore}/{TOTAL_QUESTIONS} ⚡
           </h2>
+          <p className="mt-2 text-2xl font-bold tabular-nums text-white/80 md:text-3xl">
+            {formatTime(finalTime)}
+          </p>
           {isNewBest ? (
             <p
               className="mt-2 text-xl font-bold uppercase tracking-wide md:text-2xl"
               style={{ color: "#ffd84d" }}
             >
-              ★ New best!
+              ★ New best score!
             </p>
           ) : bestForDiff > 0 ? (
-            <p className="mt-2 text-base text-white/70 md:text-lg">
-              Best so far: {bestForDiff}/10
+            <p className="mt-1 text-base text-white/70 md:text-lg">
+              Best score: {bestForDiff}/10
+            </p>
+          ) : null}
+          {isNewBestTime ? (
+            <p
+              className="mt-1 text-lg font-bold uppercase tracking-wide md:text-xl"
+              style={{ color: "#ffd84d" }}
+            >
+              ⏱ New fastest time!
+            </p>
+          ) : bestTimes[difficulty] ? (
+            <p className="mt-1 text-sm text-white/60 md:text-base">
+              Fastest 10/10: {formatTime(bestTimes[difficulty]!)}
             </p>
           ) : null}
 

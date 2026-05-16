@@ -115,11 +115,12 @@ export default function ScienceQuestView({ kidId, kidName }: Props) {
           <p className="mt-4 text-lg text-ink-soft md:text-xl">{quest.question}</p>
 
           <ul className="mt-6 grid grid-cols-1 gap-3">
-            {quest.choices.map((c) => {
+            {quest.choices.map((c, idx) => {
               const isChosen = chosen === c.id;
               const isAnswer = c.id === quest.correctChoiceId;
               const showCorrect = revealed && isAnswer;
               const showWrong = revealed && isChosen && !isAnswer;
+              const choiceLetter = String.fromCharCode(65 + idx); // A, B, C…
               return (
                 <li key={c.id}>
                   <button
@@ -137,8 +138,8 @@ export default function ScienceQuestView({ kidId, kidName }: Props) {
                             : "bg-card ring-black/10 hover:bg-bg-soft"
                     }`}
                   >
-                    <span className="mr-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-soft text-base font-bold uppercase">
-                      {c.id}
+                    <span className="mr-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-soft text-base font-bold">
+                      {choiceLetter}
                     </span>
                     {c.label}
                     {showCorrect ? <span className="ml-2">✓</span> : null}

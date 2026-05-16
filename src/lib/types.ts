@@ -8,6 +8,8 @@ export type Quest = {
   label: string;
   group: QuestGroup;
   emoji: string;
+  /** If true, this quest only appears on weekdays (Mon–Fri) */
+  weekdaysOnly?: boolean;
 };
 
 export type ScienceQuest = {
@@ -79,6 +81,7 @@ export type GameStats = {
   };
   mathDash?: {
     bestScore: Partial<Record<MathDashDifficulty, number>>;
+    bestTime: Partial<Record<MathDashDifficulty, number>>;
   };
   slidePuzzle?: {
     best3x3: { moves: number; time: number } | null;

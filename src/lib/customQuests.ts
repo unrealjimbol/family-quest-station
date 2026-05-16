@@ -28,13 +28,29 @@ function save(data: CustomQuestsData) {
   }
 }
 
-/** Get quests for a kid — custom if set, otherwise defaults */
+/** Returns true if today is Monday–Friday */
+export function isWeekday(): boolean {
+  const day = new Date().getDay(); // 0=Sun, 6=Sat
+  return day >= 1 && day <= 5;
+}
+
+/** Filter out weekdaysOnly quests on weekends */
+function applyWeekdayFilter(quests: Quest[]): Quest[] {
+  if (isWeekday()) return quests;
+  return quests.filter((q) => !q.weekdaysOnly);
+}
+
+/** Get quests for a kid — custom if set, otherwise defaults.
+ *  Automatically hides weekdaysOnly quests on weekends. */
 export function getQuests(kidId: KidId): Quest[] {
   const custom = load();
-  if (custom && custom[kidId] && custom[kidId].length > 0) {
-    return custom[kidId];
-  }
-  return kidId === "elio" ? elioQuests : emiliaQuests;
+  const base =
+    custom && custom[kidId] && custom[kidId].length > 0
+      ? custom[kidId]
+      : kidId === "elio"
+        ? elioQuests
+        : emiliaQuests;
+  return applyWeekdayFilter(base);
 }
 
 /** Save custom quests for a kid */
