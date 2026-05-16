@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import GameSession from "@/components/GameSession";
 import Confetti from "@/components/Confetti";
 import { pickScienceQuestForDay } from "@/data/scienceQuests";
+import { checkGameAccess, type GameAccessCheck } from "@/lib/gameAccess";
 import { todayStr } from "@/lib/storage";
 import { updateState, useAppState } from "@/lib/store";
 import type { KidId } from "@/lib/types";
@@ -203,23 +204,11 @@ export default function ScienceQuestView({ kidId, kidName }: Props) {
             </div>
 
             {claimed ? (
-              <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
-                <button
-                  type="button"
-                  onClick={() => setPlayingGame(true)}
-                  className="flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-bold text-ink shadow-sm ring-1 ring-black/10 transition hover:bg-bg-soft md:text-lg"
-                >
-                  <span aria-hidden="true">🎮</span>
-                  Play a game
-                </button>
-                <Link
-                  href="/"
-                  className="rounded-full px-6 py-3 text-center text-base font-bold text-white shadow-sm md:text-lg"
-                  style={{ backgroundColor: kidAccent }}
-                >
-                  Done
-                </Link>
-              </div>
+              <ClaimedActions
+                kidId={kidId}
+                kidAccent={kidAccent}
+                onPlayGame={() => setPlayingGame(true)}
+              />
             ) : null}
           </section>
         ) : null}
@@ -231,6 +220,58 @@ export default function ScienceQuestView({ kidId, kidName }: Props) {
         kidId={kidId}
         accentColor={kidAccent}
       />
+    </div>
+  );
+}
+
+/** Shows game button or access-denied message after badge claim */
+function ClaimedActions({
+  kidId,
+  kidAccent,
+  onPlayGame,
+}: {
+  kidId: KidId;
+  kidAccent: string;
+  onPlayGame: () => void;
+}) {
+  const state = useAppState();
+  const access: GameAccessCheck = useMemo(
+    () => checkGameAccess(kidId, state[kidId]),
+    [kidId, state],
+  );
+
+  return (
+    <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+      {access.allowed ? (
+        <button
+          type="button"
+          onClick={onPlayGame}
+          className="flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-bold text-ink shadow-sm ring-1 ring-black/10 transition hover:bg-bg-soft md:text-lg"
+        >
+          <span aria-hidden="true">🎮</span>
+          Play a game
+        </button>
+      ) : (
+        <div className="flex items-center gap-2 rounded-full bg-white/70 px-5 py-3 text-sm text-ink-soft ring-1 ring-black/5 md:text-base">
+          <span aria-hidden="true">
+            {access.denied === "no-yesterday-quests"
+              ? "📋"
+              : access.denied === "outside-time-window"
+                ? "🕐"
+                : access.denied === "daily-limit-reached"
+                  ? "✅"
+                  : "💤"}
+          </span>
+          <span>{access.message}</span>
+        </div>
+      )}
+      <Link
+        href="/"
+        className="rounded-full px-6 py-3 text-center text-base font-bold text-white shadow-sm md:text-lg"
+        style={{ backgroundColor: kidAccent }}
+      >
+        Done
+      </Link>
     </div>
   );
 }

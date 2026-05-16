@@ -13,6 +13,7 @@ import {
   COOLDOWN_MINUTES,
   PLAY_LIMIT_MINUTES,
 } from "@/lib/gameTimer";
+import { recordSession } from "@/lib/gameAccess";
 import { getBalance, spendPoints } from "@/lib/points";
 import type { KidId } from "@/lib/types";
 
@@ -136,6 +137,8 @@ export default function GameSession({
         setCooldownMs(getCooldownRemaining(kidId));
         return;
       }
+      // Record this as a daily game session (for the 1-per-day limit)
+      recordSession(kidId);
       if (!timerRef.current) {
         startTimer();
       }

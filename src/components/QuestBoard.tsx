@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import Confetti from "@/components/Confetti";
-import GameSession from "@/components/GameSession";
 import KidAvatar from "@/components/KidAvatar";
 import { groupMeta } from "@/data/quests";
 import type { KidId, Quest, QuestGroup } from "@/lib/types";
@@ -20,7 +19,6 @@ import { calcStreak } from "@/lib/streak";
 import { useNowTick } from "@/lib/useClock";
 
 const UNLOCK_THRESHOLD = 5;
-const GAME_UNLOCK_THRESHOLD = 3;
 
 const BLOCK_CHEERS: Record<QuestGroup, { emoji: string; message: string }> = {
   morning: { emoji: "🚀", message: "Morning hero! Ready to go!" },
@@ -74,7 +72,6 @@ export default function QuestBoard({
   const [showConfetti, setShowConfetti] = useState(false);
   const [manualToggles, setManualToggles] = useState<Partial<Record<QuestGroup, boolean>>>({});
   const [celebratingBlock, setCelebratingBlock] = useState<QuestGroup | null>(null);
-  const [playingGame, setPlayingGame] = useState(false);
   const celebratedBlocks = useRef<Set<QuestGroup>>(new Set());
   const wasUnlocked = useRef(scienceUnlocked);
 
@@ -292,39 +289,6 @@ export default function QuestBoard({
         </div>
       </section>
 
-      {/* Game access — unlocks after completing 3 quests */}
-      <section className="mb-6 rounded-3xl bg-gradient-to-br from-amber-50 to-yellow-50 p-5 shadow-sm ring-1 ring-amber-200/60 md:p-7">
-        {doneCount >= GAME_UNLOCK_THRESHOLD ? (
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl md:text-4xl" aria-hidden="true">🎮</span>
-              <div>
-                <div className="text-base font-bold md:text-lg">Game time!</div>
-                <div className="text-sm text-ink-soft">You earned a game break!</div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setPlayingGame(true)}
-              className="animate-float rounded-full px-5 py-3 text-sm font-bold text-white shadow-sm transition active:scale-[0.98] md:text-base"
-              style={{ backgroundColor: progressColor }}
-            >
-              Play now
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            <span className="text-3xl opacity-50 md:text-4xl" aria-hidden="true">🎮</span>
-            <div>
-              <div className="text-base font-semibold text-ink-soft md:text-lg">Game time locked</div>
-              <div className="text-sm text-ink-soft">
-                Finish {GAME_UNLOCK_THRESHOLD - doneCount} more quest{GAME_UNLOCK_THRESHOLD - doneCount !== 1 ? "s" : ""} to unlock games!
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
       <div className="space-y-4 md:space-y-5">
         {blockOrderChronological.map((groupKey) => {
           const meta = groupMeta[groupKey];
@@ -439,12 +403,6 @@ export default function QuestBoard({
         </button>
       </div>
 
-      <GameSession
-        open={playingGame}
-        onClose={() => setPlayingGame(false)}
-        kidId={kidId}
-        accentColor={progressColor}
-      />
     </div>
   );
 }
